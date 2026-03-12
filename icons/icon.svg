@@ -1,0 +1,36 @@
+<svg height="512" width="512" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 4.47: 精准 OEM 路径 + 左侧白色汇聚融合图标 -->
+  <defs>
+    <!-- 100% 官方 google-notebooklm-logo-icon.svg 线条路径遮罩 -->
+    <clipPath id="nb-oem-mask">
+      <path d="M256 112c-88.373 0-160 71.04-160 158.693v75.973h29.493v-7.572c0-35.547 29.04-64.374 64.88-64.374s64.88 28.827 64.88 64.374v7.572h29.494v-7.572c0-51.707-42.267-93.6-94.374-93.6-20.293 0-39.093 6.346-54.48 17.173 16.107-31.76 49.28-53.547 87.574-53.547 54.106 0 97.973 43.52 97.973 97.173v40.373h29.494v-40.373c0-69.813-57.067-126.426-127.467-126.426-31.654 0-60.614 11.44-82.907 30.4 21.893-41.04 65.36-69.014 115.44-69.014 72.08 0 130.506 57.947 130.506 129.44v75.973H416v-75.973C416 183.04 344.374 112 256 112z" />
+    </clipPath>
+
+    <!-- 垂直分色渐变：确保弧线弯曲时各归其位 -->
+    <linearGradient id="multi-color-base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="25%" stop-color="#EA4335" /> <!-- Outer: Red -->
+      <stop offset="50%" stop-color="#4285F4" /> <!-- Middle: Blue -->
+      <stop offset="75%" stop-color="#34A853" /> <!-- Inner: Green -->
+    </linearGradient>
+
+    <!-- 核心：左侧白色汇聚遮罩 -->
+    <!-- 从左(纯白)到右(透明)平滑过渡 -->
+    <linearGradient id="white-fusion-mask" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="25%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="65%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- 背景：黑色圆底 -->
+  <circle cx="256" cy="256" r="256" fill="black"/>
+
+  <g clip-path="url(#nb-oem-mask)">
+    <!-- 基础层：沿纵向分布的三条彩色线条 -->
+    <rect x="0" y="0" width="512" height="512" fill="url(#multi-color-base)" />
+
+    <!-- 叠加层：左侧白色汇聚 -->
+    <!-- 它会覆盖在底色上，使左侧 40% 的区域呈现“汇聚在一起”的纯白感，然后平滑过渡到右侧色带 -->
+    <rect x="0" y="0" width="512" height="512" fill="url(#white-fusion-mask)" />
+  </g>
+</svg>

@@ -1,0 +1,511 @@
+:root {
+  --nb-ext-bg: #ffffff;
+  --nb-ext-text: #202124;
+  --nb-ext-text-soft: #3c4043;
+  --nb-ext-text-muted: #5f6368;
+  --nb-ext-hover: rgba(0, 0, 0, 0.04);
+  --nb-ext-hover-dark: rgba(0, 0, 0, 0.08);
+  --nb-ext-border: #dadce0;
+  --nb-ext-border-soft: rgba(0, 0, 0, 0.05);
+  --nb-ext-active-bg: rgba(26, 115, 232, 0.08);
+  --nb-ext-primary: #1a73e8;
+  --nb-ext-input-bg: #f1f3f4;
+  --nb-ext-card-bg: #f8f9fa;
+}
+
+body.dark-theme :root,
+body.dark-theme {
+  --nb-ext-bg: #1f1f1f;
+  --nb-ext-text: #e3e3e3;
+  --nb-ext-text-soft: #c4c7c5;
+  --nb-ext-text-muted: #8e918f;
+  --nb-ext-hover: rgba(255, 255, 255, 0.08);
+  --nb-ext-hover-dark: rgba(255, 255, 255, 0.12);
+  --nb-ext-border: #444746;
+  --nb-ext-border-soft: rgba(255, 255, 255, 0.1);
+  --nb-ext-active-bg: rgba(168, 199, 250, 0.14);
+  --nb-ext-primary: #a8c7fa;
+  --nb-ext-input-bg: #2a2a2a;
+  --nb-ext-card-bg: #2d2e30;
+}
+
+.nb-ext-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif !important;
+  color: var(--nb-ext-text) !important;
+  overflow-y: auto !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  flex: 1 1 auto !important;
+  min-height: 200px !important;
+}
+
+/* Material Symbols 全局样式 */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20 !important;
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  user-select: none !important;
+}
+
+.source-panel-content {
+  padding-bottom: 40px !important;
+  background-color: var(--nb-ext-bg) !important;
+  position: relative !important;
+}
+
+/* 4.20: 深度集成模式 - 改由 JavaScript 精准找出 List 容器隐藏，CSS 不再一刀切屏蔽原生组件 */
+/* 4.36-4.37: 强化原生项及其父容器隐藏，彻底消除空白占位 */
+.source-panel-content div:has(> .single-source-container),
+.source-panel-content div:has(> .artifact-stretched-button),
+.source-panel-content .mat-mdc-list-item,
+.source-panel-content .single-source-container,
+.source-panel-content .artifact-stretched-button,
+.source-panel-content .source-stretched-button {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+/* 确保我们的容器不受上述 has 影响 (由于 ID 优先级) */
+#nb-ext-container {
+  display: flex !important;
+  height: auto !important;
+}
+
+/* 4.13: 原生 Header 工具栏对齐终极方案 - 强力同行隔离 */
+.source-panel-header {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 8px 0 16px !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* 标题区域 */
+.source-panel-header h2,
+.source-panel-header .title,
+.source-panel-header>span:first-child {
+  flex-shrink: 0 !important;
+  margin-right: 12px !important;
+  white-space: nowrap !important;
+  color: var(--nb-ext-text) !important;
+}
+
+.nb-ext-toolbar {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 auto !important;
+  z-index: 5 !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+  transform: translateY(2px) !important;
+}
+
+/* 4.13: 右侧按钮组容器，确保其不被挤压 */
+.source-panel-header button:last-child,
+.source-panel-header .toggle-source-panel-button {
+  flex-shrink: 0 !important;
+  margin-left: auto !important;
+}
+
+/* 4.20: 基于 JS ResizeObserver 注入的响应式收缩类 */
+body.nb-ext-is-collapsed .nb-ext-toolbar, 
+body.nb-ext-is-collapsed h2, 
+body.nb-ext-is-collapsed .title {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+}
+
+body.nb-ext-is-collapsed .nb-ext-search-container {
+  display: none !important;
+}
+
+/* 收缩模式下，只保留图标，隐藏文字和复选框 */
+body.nb-ext-is-collapsed .nb-ext-source-label, 
+body.nb-ext-is-collapsed .nb-ext-action-icon, 
+body.nb-ext-is-collapsed .nb-ext-checkbox-native, 
+body.nb-ext-is-collapsed .nb-ext-checkbox,
+body.nb-ext-is-collapsed .nb-ext-unassigned-title,
+body.nb-ext-is-collapsed #nb-ext-container {
+  display: none !important;
+}
+
+body.nb-ext-is-collapsed .nb-ext-item, 
+body.nb-ext-is-collapsed .nb-ext-folder-title, 
+body.nb-ext-is-collapsed .nb-ext-item-row {
+  padding: 12px 0 !important;
+  justify-content: center !important;
+}
+
+body.nb-ext-is-collapsed .nb-ext-folder-icon, 
+body.nb-ext-is-collapsed .nb-ext-item-icon {
+  margin: 0 !important;
+  font-size: 24px !important;
+}
+
+.nb-ext-toolbar-icon {
+  cursor: pointer !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  color: var(--nb-ext-text-muted) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.nb-ext-toolbar-icon.active {
+  background: var(--nb-ext-accent-bg) !important;
+  color: var(--nb-ext-accent) !important;
+}
+
+.nb-ext-toolbar-icon:hover {
+  background: var(--nb-ext-hover) !important;
+  color: var(--nb-ext-text) !important;
+}
+
+.nb-ext-toolbar-icon .material-symbols-outlined {
+  font-size: 20px !important;
+}
+
+.nb-ext-search-container {
+  display: none !important; /* 4.60: 废弃静态搜索容器 */
+}
+
+/* 4.60: 高级浮动搜索面板 */
+.nb-ext-search-panel {
+  position: fixed !important;
+  bottom: 20px !important; /* v4.63: 移至底部 */
+  background: var(--nb-ext-bg-elevated) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--nb-ext-shadow-lg) !important;
+  z-index: 10001 !important;
+  padding: 16px !important;
+  animation: nb-ext-fade-in-bottom 0.2s ease-out !important;
+  box-sizing: border-box !important;
+  /* 4.62: Width 和 Left 由 JS 动态计算 */
+}
+
+@keyframes nb-ext-fade-in-bottom {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nb-ext-fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+.nb-ext-search-box {
+  display: flex !important;
+  align-items: center !important;
+  background: var(--nb-ext-hover) !important;
+  border-radius: 8px !important;
+  padding: 0 8px !important;
+  border: 1px solid transparent !important;
+  transition: border-color 0.2s !important;
+}
+
+.nb-ext-search-box:focus-within {
+  border-color: var(--nb-ext-accent) !important;
+  background: var(--nb-ext-bg) !important;
+}
+
+.nb-ext-search-input-float {
+  flex: 1 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: var(--nb-ext-text) !important;
+  height: 36px !important;
+  font-size: 13px !important;
+  padding: 0 8px !important;
+}
+
+.search-hint-icon {
+  font-size: 18px !important;
+  color: var(--nb-ext-text-muted) !important;
+}
+
+.search-close-icon {
+  font-size: 18px !important;
+  color: var(--nb-ext-text-muted) !important;
+  cursor: pointer !important;
+}
+
+.search-close-icon:hover {
+  color: var(--nb-ext-accent) !important;
+}
+
+.nb-ext-search-help {
+  margin-top: 8px !important;
+  font-size: 11px !important;
+  color: var(--nb-ext-text-muted) !important;
+  line-height: 1.4 !important;
+  padding: 0 4px !important;
+}
+
+.nb-ext-checkbox-native {
+  cursor: pointer !important;
+  user-select: none !important;
+  color: var(--nb-ext-text-muted) !important;
+  font-size: 20px !important;
+  margin-right: 8px !important;
+  transition: color 0.2s !important;
+}
+
+.nb-ext-checkbox-native[textContent="check_box"] {
+  color: var(--nb-ext-primary) !important;
+}
+
+.nb-ext-checkbox-native:hover {
+  background: var(--nb-ext-hover) !important;
+  border-radius: 4px !important;
+}
+
+.nb-ext-text-truncate {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 !important;
+}
+
+.nb-ext-display-single .nb-ext-source-label {
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.nb-ext-display-double .nb-ext-source-label {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  line-height: 1.5 !important;
+}
+
+/* 文件夹与项 */
+.nb-ext-folder-title {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--nb-ext-text-soft) !important;
+}
+
+/* 4.35: 行内编辑输入框样式 */
+.nb-ext-inline-edit-input {
+  flex: 1 !important;
+  border: 1px solid var(--nb-ext-primary) !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  font-size: 14px !important;
+  outline: none !important;
+  background: var(--nb-ext-bg) !important;
+  color: var(--nb-ext-text-soft) !important;
+  margin: -2px 0 !important;
+  width: 100%;
+}
+
+.nb-ext-folder-title:hover {
+  background: var(--nb-ext-hover) !important;
+}
+
+.nb-ext-folder-icon {
+  margin-left: 8px !important;
+  margin-right: 12px !important;
+  color: var(--nb-ext-text-muted) !important;
+}
+
+.nb-ext-item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 6px 12px 6px 44px !important;
+  font-size: 13px !important;
+  color: var(--nb-ext-text-soft) !important;
+  border-radius: 6px !important;
+  position: relative !important;
+}
+
+.nb-ext-item:hover {
+  background: var(--nb-ext-hover) !important;
+}
+
+.nb-ext-item-icon {
+  margin-right: 12px !important;
+  color: var(--nb-ext-text-muted) !important;
+  font-size: 18px !important;
+  flex-shrink: 0 !important;
+}
+
+.nb-ext-source-label {
+  flex: 1 !important;
+  margin-right: 20px !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+  color: var(--nb-ext-text-soft) !important;
+  line-height: 1.5 !important;
+}
+
+/* 动作图标 */
+.nb-ext-action-icon {
+  margin-left: 8px !important;
+  color: var(--nb-ext-border) !important;
+  transition: color 0.2s !important;
+}
+
+.nb-ext-folder-title:hover .nb-ext-action-icon {
+  color: var(--nb-ext-text-muted) !important;
+}
+
+.nb-ext-action-icon:hover {
+  color: var(--nb-ext-primary) !important;
+}
+
+/* 复选框更精致 */
+.nb-ext-checkbox {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid var(--nb-ext-border) !important;
+  border-radius: 2px !important;
+  cursor: pointer !important;
+  background: transparent !important;
+}
+
+.nb-ext-checkbox:checked {
+  background: var(--nb-ext-primary) !important;
+  border-color: var(--nb-ext-primary) !important;
+}
+
+/* 待分类区域 */
+.nb-ext-unassigned {
+  margin-top: 16px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid var(--nb-ext-border-soft) !important;
+}
+
+.nb-ext-unassigned-title {
+  padding: 0 16px 8px 16px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--nb-ext-text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* 简约平铺列表样式 */
+.nb-ext-flat-list {
+  padding-bottom: 20px !important;
+}
+
+.nb-ext-item-row {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 16px !important;
+  gap: 12px !important;
+  transition: background 0.2s !important;
+  border-radius: 8px !important;
+  margin: 0 8px !important;
+  position: relative !important;
+}
+
+.nb-ext-item-row:hover {
+  background: var(--nb-ext-hover) !important;
+}
+
+
+
+.nb-ext-move-trigger {
+  opacity: 0 !important;
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  background: var(--nb-ext-bg) !important;
+  padding: 4px 8px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid var(--nb-ext-border-soft) !important;
+  z-index: 10 !important;
+  transition: opacity 0.2s !important;
+}
+
+.nb-ext-item-row:hover .nb-ext-move-trigger,
+.nb-ext-item:hover .nb-ext-move-trigger {
+  opacity: 1 !important;
+}
+
+.nb-ext-move-trigger select {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  color: var(--nb-ext-text-muted) !important;
+}
+
+/* 创建文件夹 */
+.nb-ext-folder-creator {
+  margin: 8px 12px !important;
+  padding: 4px !important;
+  background: var(--nb-ext-card-bg) !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  border-radius: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.nb-ext-input {
+  flex: 1 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 12px !important;
+  font-size: 13px !important;
+  color: var(--nb-ext-text) !important;
+}
+
+.nb-ext-add-btn {
+  background: var(--nb-ext-primary) !important;
+  color: #fff !important;
+  padding: 6px 16px !important;
+  border-radius: 16px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+}
+
+/* 4.65: 强力隐藏类必须置于文件末尾，确保其 !important 优先级高于所有之前的规则 */
+.nb-ext-hidden {
+  display: none !important;
+}
