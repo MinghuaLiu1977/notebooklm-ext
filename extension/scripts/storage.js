@@ -1,5 +1,5 @@
-const StorageManager = {
-  // 检查扩展上下文是否有效
+var StorageManager = {
+  // Check if extension context is valid
   isContextValid() {
     return typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.id;
   },

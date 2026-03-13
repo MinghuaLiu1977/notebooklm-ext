@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (success) {
                 licenseInfo.isLicensed = true;
                 updateUI();
-                // 通知所有页面刷新
+                // Notify all pages to refresh
                 chrome.tabs.query({url: "https://notebooklm.google.com/*"}, (tabs) => {
                     tabs.forEach(tab => chrome.tabs.reload(tab.id));
                 });
@@ -67,12 +67,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function verifyLicense(licenseKey) {
         try {
+            const params = new URLSearchParams();
+            params.append('product_id', '9KnEA4Z1DE6BlSSJRqONvg==');
+            params.append('license_key', licenseKey);
+
             const response = await fetch('https://api.gumroad.com/v2/licenses/verify', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `product_id=9KnEA4Z1DE6BlSSJRqONvg==&license_key=${encodeURIComponent(licenseKey)}`
+                body: params.toString()
             });
 
             if (!response.ok) {

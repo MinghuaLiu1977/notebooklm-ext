@@ -40,7 +40,7 @@ body.dark-theme {
   min-height: 200px !important;
 }
 
-/* Material Symbols 全局样式 */
+/* Material Symbols Global Styles */
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20 !important;
   font-size: 20px !important;
@@ -59,27 +59,17 @@ body.dark-theme {
   position: relative !important;
 }
 
-/* 4.20: 深度集成模式 - 改由 JavaScript 精准找出 List 容器隐藏，CSS 不再一刀切屏蔽原生组件 */
-/* 4.36-4.37: 强化原生项及其父容器隐藏，彻底消除空白占位 */
-.source-panel-content div:has(> .single-source-container),
-.source-panel-content div:has(> .artifact-stretched-button),
-.source-panel-content .mat-mdc-list-item,
-.source-panel-content .single-source-container,
-.source-panel-content .artifact-stretched-button,
-.source-panel-content .source-stretched-button {
-  display: none !important;
-  height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
+/* 4.10: Absolute positioning overlay scheme - dimensions and position are now dynamically set via JS to match native scroll area */
+#nb-ext-container {
+  position: absolute !important;
+  z-index: 100 !important;
+  background-color: var(--nb-ext-bg) !important;
+  display: flex !important;
+  flex-direction: column !important;
   overflow: hidden !important;
 }
-/* 确保我们的容器不受上述 has 影响 (由于 ID 优先级) */
-#nb-ext-container {
-  display: flex !important;
-  height: auto !important;
-}
 
-/* 4.13: 原生 Header 工具栏对齐终极方案 - 强力同行隔离 */
+/* 4.13: Native Header toolbar alignment - strong peer isolation */
 .source-panel-header {
   display: flex !important;
   flex-direction: row !important;
@@ -93,7 +83,7 @@ body.dark-theme {
   position: relative !important;
 }
 
-/* 标题区域 */
+/* Title Area */
 .source-panel-header h2,
 .source-panel-header .title,
 .source-panel-header>span:first-child {
@@ -104,28 +94,44 @@ body.dark-theme {
 }
 
 .nb-ext-toolbar {
-  display: flex !important;
+  display: inline-flex !important;
   gap: 4px !important;
   align-items: center !important;
-  justify-content: center !important;
-  flex: 1 1 auto !important;
+  justify-content: flex-start !important;
+  flex: 0 0 auto !important;
   z-index: 5 !important;
   height: 100% !important;
-  margin: 0 !important;
-  padding: 0 4px !important;
-  transform: translateY(2px) !important;
+  margin: 0 4px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-/* 4.13: 右侧按钮组容器，确保其不被挤压 */
+/* 4.71: Force toolbar parent container (usually nav) to align side-by-side */
+.panel-header nav:has(.nb-ext-toolbar) {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex: 1 !important;
+}
+
+.panel-header-content {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  margin-right: 8px !important;
+}
+
+/* 4.13: Right button group container, ensuring it is not squeezed */
 .source-panel-header button:last-child,
 .source-panel-header .toggle-source-panel-button {
   flex-shrink: 0 !important;
   margin-left: auto !important;
 }
 
-/* 4.20: 基于 JS ResizeObserver 注入的响应式收缩类 */
-body.nb-ext-is-collapsed .nb-ext-toolbar, 
-body.nb-ext-is-collapsed h2, 
+/* 4.20: Responsive collapse class based on JS ResizeObserver injection */
+body.nb-ext-is-collapsed .nb-ext-toolbar,
+body.nb-ext-is-collapsed h2,
 body.nb-ext-is-collapsed .title {
   display: none !important;
   pointer-events: none !important;
@@ -133,28 +139,36 @@ body.nb-ext-is-collapsed .title {
   width: 0 !important;
 }
 
+/* 4.72: Precision hiding based on native Angular class names */
+[class*="panel-header"].panel-header-collapsed .nb-ext-toolbar,
+[class*="panel-header-collapsed"] .nb-ext-toolbar {
+  display: none !important;
+}
+
 body.nb-ext-is-collapsed .nb-ext-search-container {
   display: none !important;
 }
 
-/* 收缩模式下，只保留图标，隐藏文字和复选框 */
-body.nb-ext-is-collapsed .nb-ext-source-label, 
-body.nb-ext-is-collapsed .nb-ext-action-icon, 
-body.nb-ext-is-collapsed .nb-ext-checkbox-native, 
+/* In collapsed mode, keep only icons, hide text and checkboxes */
+body.nb-ext-is-collapsed .nb-ext-source-label,
+body.nb-ext-is-collapsed .nb-ext-action-icon,
+body.nb-ext-is-collapsed .nb-ext-checkbox-native,
 body.nb-ext-is-collapsed .nb-ext-checkbox,
 body.nb-ext-is-collapsed .nb-ext-unassigned-title,
-body.nb-ext-is-collapsed #nb-ext-container {
+body.nb-ext-is-collapsed #nb-ext-container:not(:has(.nb-ext-toolbar)),
+body.nb-ext-is-collapsed .nb-ext-folder-list {
   display: none !important;
 }
 
-body.nb-ext-is-collapsed .nb-ext-item, 
-body.nb-ext-is-collapsed .nb-ext-folder-title, 
+body.nb-ext-is-collapsed .nb-ext-item,
+body.nb-ext-is-collapsed .nb-ext-folder-title,
 body.nb-ext-is-collapsed .nb-ext-item-row {
   padding: 12px 0 !important;
   justify-content: center !important;
+  flex-direction: column !important; /* Keep vertical even when collapsed */
 }
 
-body.nb-ext-is-collapsed .nb-ext-folder-icon, 
+body.nb-ext-is-collapsed .nb-ext-folder-icon,
 body.nb-ext-is-collapsed .nb-ext-item-icon {
   margin: 0 !important;
   font-size: 24px !important;
@@ -170,6 +184,8 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   border-radius: 50% !important;
   color: var(--nb-ext-text-muted) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-top: 4px !important;
+  /* Visual alignment offset */
 }
 
 .nb-ext-toolbar-icon.active {
@@ -187,13 +203,15 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 }
 
 .nb-ext-search-container {
-  display: none !important; /* 4.60: 废弃静态搜索容器 */
+  display: none !important;
+  /* 4.60: Deprecated static search container */
 }
 
-/* 4.60: 高级浮动搜索面板 */
+/* 4.60: Advanced floating search panel */
 .nb-ext-search-panel {
   position: fixed !important;
-  bottom: 20px !important; /* v4.63: 移至底部 */
+  bottom: 20px !important;
+  /* v4.63: Moved to bottom */
   background: var(--nb-ext-bg-elevated) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
@@ -204,17 +222,31 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   padding: 16px !important;
   animation: nb-ext-fade-in-bottom 0.2s ease-out !important;
   box-sizing: border-box !important;
-  /* 4.62: Width 和 Left 由 JS 动态计算 */
+  /* 4.62: Width and Left are calculated dynamically via JS */
 }
 
 @keyframes nb-ext-fade-in-bottom {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes nb-ext-fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -277,7 +309,8 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   transition: color 0.2s !important;
 }
 
-.nb-ext-checkbox-native[textContent="check_box"] {
+.nb-ext-checkbox-native[data-checked="true"],
+.nb-ext-checkbox-native[data-checked="partial"] {
   color: var(--nb-ext-primary) !important;
 }
 
@@ -298,6 +331,7 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  flex: 1 !important; /* Force take up remaining space to push icon to right */
 }
 
 .nb-ext-display-double .nb-ext-source-label {
@@ -306,10 +340,12 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
   overflow: hidden !important;
+  white-space: normal !important;
   line-height: 1.5 !important;
+  flex: 1 !important;
 }
 
-/* 文件夹与项 */
+/* Folders and Items */
 .nb-ext-folder-title {
   display: flex !important;
   align-items: center !important;
@@ -319,9 +355,10 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--nb-ext-text-soft) !important;
+  min-height: 44px !important; /* Ensure consistent height */
 }
 
-/* 4.35: 行内编辑输入框样式 */
+/* Inline edit input styles */
 .nb-ext-inline-edit-input {
   flex: 1 !important;
   border: 1px solid var(--nb-ext-primary) !important;
@@ -346,51 +383,64 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 }
 
 .nb-ext-item {
-  display: flex !important;
-  align-items: center !important;
-  padding: 6px 12px 6px 44px !important;
-  font-size: 13px !important;
-  color: var(--nb-ext-text-soft) !important;
   border-radius: 6px !important;
   position: relative !important;
+  gap: 8px !important;
+  flex-direction: column !important; /* Vertical layout for tree items */
+  align-items: stretch !important;
+  padding: 8px 12px !important; /* Default padding */
+  min-height: 44px !important; /* Ensure consistent height */
+}
+
+.nb-ext-item.nb-ext-display-double {
+  padding: 4px 6px !important;
+  min-height: 52px !important; /* More space for double line text */
 }
 
 .nb-ext-item:hover {
   background: var(--nb-ext-hover) !important;
 }
 
-.nb-ext-item-icon {
-  margin-right: 12px !important;
-  color: var(--nb-ext-text-muted) !important;
+.nb-ext-folder-arrow {
   font-size: 18px !important;
-  flex-shrink: 0 !important;
+  transition: transform 0.2s ease !important;
+  color: var(--nb-ext-text-muted) !important;
+}
+
+.nb-ext-folder-arrow.expanded {
+  transform: rotate(90deg) !important;
 }
 
 .nb-ext-source-label {
-  flex: 1 !important;
-  margin-right: 20px !important;
+  flex: 1 !important; /* Fill remaining space, pushing icons to the right */
+  margin-right: 8px !important;
   cursor: pointer !important;
   font-size: 13px !important;
   color: var(--nb-ext-text-soft) !important;
   line-height: 1.5 !important;
+  padding-right: 0px !important; 
+  word-break: break-all !important;
 }
 
-/* 动作图标 */
+/* Action Icons */
 .nb-ext-action-icon {
   margin-left: 8px !important;
-  color: var(--nb-ext-border) !important;
-  transition: color 0.2s !important;
+  color: var(--nb-ext-text-muted) !important;
+  transition: all 0.2s !important;
+  opacity: 0 !important; /* Hidden by default */
+  visibility: hidden !important;
 }
 
 .nb-ext-folder-title:hover .nb-ext-action-icon {
-  color: var(--nb-ext-text-muted) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .nb-ext-action-icon:hover {
   color: var(--nb-ext-primary) !important;
 }
 
-/* 复选框更精致 */
+/* Refined checkbox */
 .nb-ext-checkbox {
   appearance: none !important;
   -webkit-appearance: none !important;
@@ -407,7 +457,7 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   border-color: var(--nb-ext-primary) !important;
 }
 
-/* 待分类区域 */
+/* Pending classification area */
 .nb-ext-unassigned {
   margin-top: 16px !important;
   padding-top: 16px !important;
@@ -423,60 +473,91 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   letter-spacing: 0.5px !important;
 }
 
-/* 简约平铺列表样式 */
+/* Minimal flat list style */
 .nb-ext-flat-list {
   padding-bottom: 20px !important;
 }
 
 .nb-ext-item-row {
-  display: flex !important;
-  align-items: center !important;
-  padding: 8px 16px !important;
-  gap: 12px !important;
   transition: background 0.2s !important;
   border-radius: 8px !important;
   margin: 0 8px !important;
   position: relative !important;
+  flex-direction: column !important; /* Core: Vertical layout to support action rows */
+  align-items: stretch !important;
+  padding: 8px 12px !important; /* Default padding */
+  min-height: 44px !important; /* Consistent height */
+}
+
+.nb-ext-item-row.nb-ext-display-double {
+  padding: 4px 6px !important;
+  min-height: 52px !important;
 }
 
 .nb-ext-item-row:hover {
   background: var(--nb-ext-hover) !important;
 }
 
+/* Nested items in folders: right offset and subtle background distinction */
+.nb-ext-folder-content .nb-ext-item {
+  padding-left: 28px !important;
+  border-radius: 0 8px 8px 0 !important;
+}
 
+.nb-ext-folder-content {
+  margin-bottom: 8px !important;
+}
+
+
+
+.nb-ext-item-main {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important; /* Force side-by-side */
+  width: 100% !important;
+}
+
+.nb-ext-item-actions {
+  display: none !important; /* Completely remove old action row */
+}
 
 .nb-ext-move-trigger {
+  display: flex !important; /* Always in layout */
+  visibility: hidden !important;
   opacity: 0 !important;
-  position: absolute !important;
-  right: 8px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  display: flex !important;
   align-items: center !important;
-  background: var(--nb-ext-bg) !important;
-  padding: 4px 8px !important;
-  border-radius: 20px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
-  border: 1px solid var(--nb-ext-border-soft) !important;
-  z-index: 10 !important;
-  transition: opacity 0.2s !important;
+  justify-content: center !important;
+  background: var(--nb-ext-hover) !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+  color: var(--nb-ext-text-muted) !important;
+  transition: all 0.2s !important;
+  margin-left: 4px !important;
+  pointer-events: none !important; /* Ignore clicks when hidden */
+}
+
+.nb-ext-move-trigger:hover {
+  background: var(--nb-ext-hover-dark) !important;
+  color: var(--nb-ext-primary) !important;
+}
+
+.nb-ext-move-trigger .material-symbols-outlined {
+  font-size: 18px !important;
 }
 
 .nb-ext-item-row:hover .nb-ext-move-trigger,
 .nb-ext-item:hover .nb-ext-move-trigger {
+  visibility: visible !important;
   opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
-.nb-ext-move-trigger select {
-  border: none !important;
-  outline: none !important;
-  background: transparent !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-  color: var(--nb-ext-text-muted) !important;
-}
-
-/* 创建文件夹 */
+/* Folder Creator */
 .nb-ext-folder-creator {
   margin: 8px 12px !important;
   padding: 4px !important;
@@ -505,140 +586,331 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   cursor: pointer !important;
 }
 
-/* 4.65: 强力隐藏类必须置于文件末尾，确保其 !important 优先级高于所有之前的规则 */
+/* Full-layer modal overlay */
+.nb-ext-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px) !important;
+  z-index: 100000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: nb-ext-fade-in 0.2s ease-out !important;
+}
+
+.nb-ext-modal-content {
+  background: var(--nb-ext-bg) !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  width: 90% !important;
+  max-width: 400px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.nb-ext-modal-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--nb-ext-text) !important;
+}
+
+.nb-ext-modal-input {
+  width: 100% !important;
+  padding: 10px 12px !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  border-radius: 8px !important;
+  background: var(--nb-ext-input-bg) !important;
+  color: var(--nb-ext-text) !important;
+  outline: none !important;
+}
+
+.nb-ext-modal-input:focus {
+  border-color: var(--nb-ext-primary) !important;
+}
+
+.nb-ext-modal-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+.nb-ext-btn {
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  border: none !important;
+}
+
+.nb-ext-btn-primary {
+  background: var(--nb-ext-primary) !important;
+  color: white !important;
+}
+
+.nb-ext-btn-ghost {
+  background: transparent !important;
+  color: var(--nb-ext-text-muted) !important;
+}
+
+.nb-ext-btn-ghost:hover {
+  background: var(--nb-ext-hover) !important;
+}
+
+/* 4.65: Force hiding classes must be at the end to ensure priority over previous rules */
 .nb-ext-hidden {
   display: none !important;
 }
+
 /* --- Paywall & License Styles --- */
 .nb-ext-paywall {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 999999; /* 确保在最顶层 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+/* Styles for inline mode as a child element */
+.nb-ext-paywall-inline {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: transparent !important;
+  z-index: 1 !important;
+  backdrop-filter: none !important;
+  padding: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .nb-ext-paywall-modal {
-    background: white;
-    width: 90%;
-    max-width: 400px;
-    padding: 32px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    animation: nbExtFadeIn 0.3s ease-out;
+  background: white;
+  width: 90%;
+  max-width: 400px;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  animation: nbExtFadeIn 0.3s ease-out;
+}
+
+.nb-ext-paywall-inline .nb-ext-paywall-modal {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 24px 16px !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  background: var(--nb-ext-card-bg) !important;
 }
 
 @keyframes nbExtFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 body.dark-theme .nb-ext-paywall-modal {
-    background: #202124;
-    border: 1px solid #3c4043;
+  background: #202124;
+  border: 1px solid #3c4043;
 }
 
 .nb-ext-paywall-icon {
-    font-size: 48px;
-    color: #1a73e8;
-    margin-bottom: 20px;
+  font-size: 48px;
+  color: #1a73e8;
+  margin-bottom: 20px;
+}
+
+.nb-ext-paywall-inline .nb-ext-paywall-icon {
+  font-size: 32px !important;
+  margin-bottom: 12px !important;
 }
 
 .nb-ext-paywall-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #3c4043;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #3c4043;
+}
+
+.nb-ext-paywall-inline .nb-ext-paywall-title {
+  font-size: 1.1rem !important;
+  margin-bottom: 8px !important;
 }
 
 body.dark-theme .nb-ext-paywall-title {
-    color: #e8eaed;
+  color: #e8eaed;
 }
 
 .nb-ext-paywall-desc {
-    font-size: 0.95rem;
-    color: #5f6368;
-    margin-bottom: 28px;
-    line-height: 1.6;
+  font-size: 0.95rem;
+  color: #5f6368;
+  margin-bottom: 28px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.nb-ext-paywall-inline .nb-ext-paywall-desc {
+  margin-bottom: 16px !important;
+  font-size: 0.85rem !important;
 }
 
 body.dark-theme .nb-ext-paywall-desc {
-    color: #9aa0a6;
+  color: #9aa0a6;
 }
 
 .nb-ext-license-input-group {
-    width: 100%;
-    max-width: 280px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nb-ext-paywall-inline .nb-ext-license-input-group {
+  max-width: 100% !important;
 }
 
 .nb-ext-license-input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.2s;
-    background: white;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+  box-sizing: border-box;
 }
 
 body.dark-theme .nb-ext-license-input {
-    background: #202124;
-    border-color: #5f6368;
-    color: white;
+  background: #202124;
+  border-color: #5f6368;
+  color: white;
 }
 
 .nb-ext-license-input:focus {
-    border-color: #1a73e8;
+  border-color: #1a73e8;
 }
 
 .nb-ext-activate-btn {
-    padding: 10px 20px;
-    background-color: #1a73e8;
-    color: white;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-    border: none;
+  padding: 10px 20px;
+  background-color: #1a73e8;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
 }
 
 .nb-ext-activate-btn:hover {
-    background-color: #1557b0;
+  background-color: #1557b0;
 }
 
 .nb-ext-activate-btn:disabled {
-    background-color: #9aa0a6;
-    cursor: not-allowed;
+  background-color: #9aa0a6;
+  cursor: not-allowed;
 }
 
 .nb-ext-buy-link {
-    margin-top: 16px;
-    color: #1a73e8;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
+  margin-top: 16px;
+  color: #1a73e8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.nb-ext-paywall-inline .nb-ext-buy-link {
+  margin-top: 12px !important;
+  font-size: 0.8rem !important;
 }
 
 .nb-ext-buy-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .nb-ext-license-error {
-    color: #d93025;
-    font-size: 0.8rem;
-    margin-top: 4px;
+  color: #d93025;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+/* Custom move menu overlay */
+.nb-ext-move-menu {
+  position: absolute !important;
+  background: var(--nb-ext-bg) !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+  z-index: 200000 !important;
+  min-width: 180px !important;
+  padding: 8px 0 !important;
+  animation: nb-ext-menu-pop 0.15s ease-out !important;
+}
+
+@keyframes nb-ext-menu-pop {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.nb-ext-move-menu-header {
+  padding: 8px 16px 8px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--nb-ext-text-muted) !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid var(--nb-ext-border-soft) !important;
+  margin-bottom: 4px !important;
+}
+
+.nb-ext-move-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 16px !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+  color: var(--nb-ext-text-soft) !important;
+  gap: 8px !important;
+  transition: background 0.2s !important;
+}
+
+.nb-ext-move-menu-item:hover {
+  background: var(--nb-ext-hover) !important;
+}
+
+.nb-ext-move-menu-item .check-icon {
+  color: var(--nb-ext-primary) !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  margin-right: 8px !important;
+}
+
+.nb-ext-move-menu-item .empty-icon {
+  width: 18px !important;
+  margin-right: 8px !important;
 }

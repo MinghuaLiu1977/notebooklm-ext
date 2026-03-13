@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "NotebookLM Enhancer",
-  "version": "1.1.2",
-  "description": "NotebookLM 的功能增强插件，提供目录管理、高级搜索等进阶功能",
+  "version": "1.1.3",
+  "description": "An enhancer for NotebookLM, providing folder management, advanced search and more.",
   "permissions": [
     "storage"
   ],
@@ -23,7 +23,12 @@
         "styles/main.css"
       ],
       "js": [
+        "scripts/utils.js",
+        "scripts/view_detector.js",
         "scripts/storage.js",
+        "scripts/layout_engine.js",
+        "scripts/ui_renderer.js",
+        "scripts/toolbar_manager.js",
         "scripts/content.js"
       ],
       "run_at": "document_idle"

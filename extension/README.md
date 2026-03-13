@@ -1,82 +1,80 @@
 # NotebookLM Enhancer (Browser Extension)
 
-**NotebookLM Enhancer** 是一款专为 Google NotebookLM 深度定制的非官方浏览器扩展。它致力于解决原生界面在处理海量文档时的交互痛点，通过引入**文件目录管理**、**高级搜索系统**、**响应式界面调整**以及**深度系统集成**，全面提升知识管理效率与阅读体验。
+**NotebookLM Enhancer** is an unofficial browser extension deeply customized for Google NotebookLM. It addresses interaction pain points in the native interface when handling massive documents by introducing **directory management**, an **advanced search system**, **responsive UI adjustments**, and **deep system integration**, significantly enhancing knowledge management efficiency and the reading experience.
 
 ![NotebookLM Enhancer Logo](icons/icon.svg)
 
 ---
 
-## 🌟 核心特性 (Features)
+## 🌟 Key Features
 
-### 📁 1. 结构化目录系统 (Tree View Management)
-原生 NotebookLM 仅提供枯燥的平铺文档列表。本扩展通过拦截与注入机制，实现了真正的目录化管理：
-- **无感创建与重命名**：一键新建文件夹（支持 `Esc` 取消操作），双击文件夹名即可行内重命名。
-- **拖拽式/下拉式 归类**：为每个文档源提供专用的“归类”下拉触发器，轻松将凌乱的文档整理入库。
-- **智能未分类分区**：自动将未关联目录的文档隔离至底部的“待分类区”，使文件结构一目了然。
-- **级联多选增强**：点击文件夹复选框，自动选中其下所有来源文档，极大提升了批量处理的效率。
+### 📁 1. Structured Directory System (Tree View Management)
+Native NotebookLM only provides a flat document list. This extension implements true directory management through interception and injection:
+- **Seamless Creation & Renaming**: One-click folder creation (supports `Esc` to cancel), and double-click folder names for inline renaming.
+- **Unified Action Menu**: Each document has a dedicated "More actions" trigger that appears on hover, allowing you to **Move to folder**, **Rename**, or **Delete** with ease.
+- **Intelligent Unassigned Section**: Automatically isolates documents not associated with any directory into a "Pending Classification" area at the bottom.
+- **Cascading Multi-selection**: Clicking a folder checkbox automatically selects all its child documents, greatly improving batch processing efficiency.
 
-### 🔍 2. 浮动高级搜索系统 (Advanced Floating Search)
-摆脱难以察觉的原生搜索框，带来现代化的检索体验（新增自 v4.60+）：
-- **毛玻璃浮动面板**：点击工具栏的搜索图标，底部淡入高级搜索面板，不占用宝贵的垂直显示空间。
-- **自适应宽度设计**：搜索面板宽度利用 `ResizeObserver` 实时感知侧边栏拖拽动作，实现完美随动。
-- **高级逻辑过滤**：
-  - 支持 **空格 (` `)** 进行 `OR`（或）逻辑匹配。
-  - 支持 **加号 (`+`)** 进行 `AND`（与）逻辑匹配。
-- **输入法友好 (IME)**：完美支持中文拼音等输入法，只在合成（Composition）完成后触发过滤。
-- **层级穿透过滤**：搜索时不仅过滤文档，更会智能隐藏空结果的文件夹和分类头，确保视图纯净。
+### 🔍 2. Advanced Floating Search System
+Break free from the barely noticeable native search box with a modern retrieval experience (Added since v4.60+):
+- **Frosted Glass Floating Panel**: Click the search icon in the toolbar to reveal a sliding search panel that doesn't consume valuable vertical space.
+- **Adaptive Width Design**: The search panel width utilizes `ResizeObserver` to perceive sidebar drag actions in real-time, ensuring perfect alignment.
+- **Advanced Logical Filtering**:
+  - Supports **Space (` `)** for `OR` logic matching.
+  - Supports **Plus (`+`)** for `AND` logic matching.
+- **IME Friendly**: Perfectly supports input methods like Chinese Pinyin, triggering filtering only after composition is complete.
+- **Hierarchical Penetration**: Filtering not only hides documents but also intelligently hides empty folders and category headers to keep the view clean.
 
-### 🎨 3. 原生级 UI 与自适应主题
-UI 设计深度契合谷歌 Material Design，让你感觉这就是原生功能：
-- **亮/暗主题自动切换**：注入 CSS 全局变量感知 `body.dark-theme`，主题色、悬停态、输入框背景无缝适配。
-- **精密流向控制**：强制修复原生“全选按钮”的位置错乱，确保逻辑流向始终遵循自上而下的自然阅读习惯。
-- **单/双行文本截断**：通过视图模式切换，长文件名称在拥挤时也可以安全截断避免布局崩塌。
+### 🎨 3. Native-level UI & Adaptive Themes
+The UI design closely adheres to Google's Material Design, making it feel like a native feature:
+- **Auto Light/Dark Theme**: Injects CSS variables that perceive `body.dark-theme`, seamlessly adapting theme colors, hover states, and input backgrounds.
+- **Precision Flow Control**: Fixes the misaligned native "Select all" button, ensuring the logical flow follows natural top-to-bottom reading habits.
+- **Hover-only Actions**: Edit and delete icons for folders, as well as file action triggers, only appear when hovering over the row to maintain a minimalist interface.
 
-### 🔧 4. 深度 DOM 接管与性能保障
-超越简单的 CSS 覆盖，扩展在底层重构了交互逻辑以保证可靠性：
-- **彻底根除 !important 冲突**：采用最高权重的 CSS 自定义沉底强力隐藏规则，保证搜索过滤在任何复杂 DOM 下绝对生效。
-- **Trusted Types 兼容**：完全摒弃 `innerHTML`，所有 DOM 节点采用安全的 `createElement` 组装，杜绝 CSP 报错。
-- **原生元素软屏蔽**：精确计算原生列表节点（包括 `List` 容器和孤立的 Button），实现视觉消失而不破坏 Angular 宿主的响应链。
+### 🔧 4. Deep DOM Takeover & Performance
+Beyond simple CSS overrides, the extension reconstructs interaction logic at the base level for reliability:
+- **Eliminate !important Conflicts**: Uses high-priority CSS rules to ensure search filtering works across complex DOM structures.
+- **Trusted Types Compliance**: Completely avoids `innerHTML`, using safe `createElement` for all DOM nodes to prevent CSP errors.
+- **Soft Blocking of Native Elements**: Precisely calculates native list nodes to hide them visually without breaking the underlying Angular interaction chain.
 
 ---
 
-## 🚀 安装指南
+## 🚀 Installation Guide
 
-由于目前未上架 Chrome Web Store，请通过**开发者模式**手动加载：
+Since it is not yet on the Chrome Web Store, please load it manually via **Developer Mode**:
 
-1. 下载或克隆本仓库到本地：
+1. Download or clone this repository:
    ```bash
    git clone https://github.com/MinghuaLiu1977/notebooklm-ext.git
    ```
-2. 打开 Chromium 内核浏览器 (Chrome, Edge, Brave 等)，在地址栏输入：`chrome://extensions/` 
-3. 在页面右上角开启 **“开发者模式” (Developer mode)**。
-4. 点击 **“加载已解压的扩展程序” (Load unpacked)**，然后选择你克隆下的 `notebooklm-master-ext` 文件夹。
-5. 打开 [NotebookLM](https://notebooklm.google.com/) 即可体验。
+2. Open a Chromium-based browser (Chrome, Edge, Brave, etc.) and type `chrome://extensions/` in the address bar.
+3. Enable **"Developer mode"** in the top right corner.
+4. Click **"Load unpacked"** and select the `notebooklm-master-ext` folder.
+5. Open [NotebookLM](https://notebooklm.google.com/) to start.
 
-*(注：如果你已经打开了 NotebookLM，加载扩展后需强制刷新 `Ctrl/Cmd + Shift + R` 以应用脚本)*
-
----
-
-## 🛠 技术实现与架构演进
-
-从基础版本到 **v4.6X** 系列，扩展经历了巨大的架构演变：
-
-- **v3.X - 基础建立**：通过 localStorage 持久化目录数据，实现了基本的虚拟 DOM 挂载和文件夹交互。
-- **v4.20~v4.30 - 防御性重构**：引入 Trusted Types 支持，解决了 Angular 框架渲染冲突导致列表多次叠加的严重问题。引入了 `ResizeObserver` 监控侧边栏折叠。
-- **v4.40~v4.50 - UI 视觉对齐**：修复了 Google 原生加号、Checkbox 图标的偏移，重构了标题栏对齐，引入 CSS 变量控制亮暗黑夜系统。
-- **v4.60-v4.68 - 高级检索与终极稳定**：引入了悬浮输入、多条件逻辑判定、底部对齐自适应以及解决了长达两个版本的强力 CSS 覆盖导致的过滤隐藏失效难题。
-
-详细技术演进记录请参阅项目内新增的 `技术演进路线_ImplementationPlan.md` 与 `版本更新日志_Walkthrough.md`。
+*(Note: If you already have NotebookLM open, you may need to force-refresh `Ctrl/Cmd + Shift + R` after loading the extension.)*
 
 ---
 
-## ⚖️ 免责声明
+## 🛠 Technical Implementation & Evolution
 
-本扩展为个人开发者为优化效率而制作的独立作品，与 Google LLc 及 NotebookLM 官方无任何附属、赞助或合作关系。扩展所有的 DOM 挂载和拦截仅在客户端完成，**不会**干涉或上传您的任何笔记数据。
+The extension has undergone significant architectural evolution:
 
-由于官方 DOM 结构变动可能导致本扩展失效，建议关注本项目以获取最新版本。
+- **v3.X - Foundation**: Persistent directory data via localStorage, basic virtual DOM mounting.
+- **v4.20~v4.30 - Defensive Refactoring**: Trusted Types support to solve Angular rendering conflicts. Integrated `ResizeObserver` for sidebar monitoring.
+- **v4.40~v4.50 - UI Alignment**: Fixed native icon offsets, reconstructed title bar alignment, and introduced adaptive light/dark themes.
+- **v4.60-v4.70 - Advanced Actions & Stability**: Unified file action menus (Rename/Delete/Move), hover-only visibility for controls, and dynamic search panel positioning.
 
 ---
 
-## 💡 参与贡献 
+## ⚖️ Disclaimer
 
-如果你对改进匹配算法、支持新布局或是发现 Bug 有任何想法，欢迎提交 [Issues](#) 或 [Pull Requests](#) 共同维护！
+This extension is an independent work created by an individual developer to optimize efficiency. it has no official affiliation, sponsorship, or partnership with Google LLC or NotebookLM. All DOM mounting and interception occur locally and **do not** interfere with or upload your note data.
+
+Since official DOM changes may break the extension, we recommend following this project for the latest updates.
+
+---
+
+## 💡 Contributing
+
+If you have ideas for improving matching algorithms, supporting new layouts, or finding bugs, feel free to submit **Issues** or **Pull Requests**!
