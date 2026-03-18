@@ -48,8 +48,8 @@ var LayoutEngine = {
         if (shell) {
           shell.style.visibility = 'visible';
           shell.classList.remove('nb-ext-shell-collapsed');
-          shell.style.left = `${targetRect.left + 16}px`;
-          shell.style.width = `${targetRect.width - 32}px`;
+          shell.style.left = `${targetRect.left}px`;
+          shell.style.width = `${targetRect.width}px`;
           shell.style.bottom = '24px';
         }
       } else {

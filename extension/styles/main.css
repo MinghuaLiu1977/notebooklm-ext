@@ -136,6 +136,7 @@ body.dark-theme {
   flex-shrink: 0 !important;
   min-width: 0 !important;
   z-index: 10001 !important;
+  margin-left: 16px !important;
 }
 
 body.dark-theme .nb-ext-toolbar {
@@ -249,7 +250,9 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid var(--nb-ext-border) !important;
-  border-radius: 12px !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
   box-shadow: var(--nb-ext-shadow-lg) !important;
   padding: 16px !important;
   animation: nb-ext-fade-in-bottom 0.2s ease-out !important;
