@@ -44,7 +44,7 @@ var UIRenderer = {
 
       container.textContent = '';
 
-      ToolbarManager.initToolbar(manager, container);
+      ToolbarManager.initToolbar(manager);
 
       if (manager.treeViewEnabled) {
         this.renderTreeView(manager, container, config);
@@ -429,6 +429,14 @@ var UIRenderer = {
     const items = document.querySelectorAll('.nb-ext-item, .nb-ext-item-row');
     const folders = document.querySelectorAll('.nb-ext-folder');
     const unassignedArea = document.querySelector('.nb-ext-unassigned');
+    const container = document.getElementById('nb-ext-container');
+    if (container) {
+      if (manager.isSearchOpen) {
+        container.classList.add('nb-ext-searching');
+      } else {
+        container.classList.remove('nb-ext-searching');
+      }
+    }
 
     const andGroups = query.split('+').map(g => g.trim()).filter(g => g);
     const matches = (text) => {
@@ -438,7 +446,8 @@ var UIRenderer = {
     };
 
     items.forEach(el => {
-      const text = el.querySelector('.nb-ext-source-label')?.textContent || el.textContent;
+      const labelEl = el.querySelector('.nb-ext-source-label');
+      const text = labelEl ? labelEl.textContent : el.textContent;
       if (matches(text)) el.classList.remove('nb-ext-hidden');
       else el.classList.add('nb-ext-hidden');
     });
@@ -457,6 +466,20 @@ var UIRenderer = {
       const hasVisible = !!unassignedArea.querySelector('.nb-ext-item-row:not(.nb-ext-hidden)');
       unassignedArea.classList.toggle('nb-ext-hidden', !!query && !hasVisible);
       unassignedArea.querySelector('.nb-ext-unassigned-title')?.classList.toggle('nb-ext-hidden', !!query && !hasVisible);
+    }
+
+    // Scroll to top AFTER all visibility changes
+    if (query && container) {
+      const scrollAll = (el) => {
+        while (el) {
+          if (el.scrollTop > 0) el.scrollTop = 0;
+          el = el.parentElement;
+        }
+      };
+      scrollAll(container);
+      setTimeout(() => scrollAll(container), 10);
+      setTimeout(() => scrollAll(container), 100);
+      setTimeout(() => scrollAll(container), 500);
     }
   },
 

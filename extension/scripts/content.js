@@ -19,6 +19,11 @@ var NotebookManager = {
   sidebarObserver: null,
 
   async init() {
+    // Check if extension context is valid
+    if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) {
+      return;
+    }
+
     // Check if extension is enabled
     const isEnabled = await StorageManager.getEnabledState();
     if (!isEnabled) {
@@ -94,6 +99,7 @@ var NotebookManager = {
     // Minimal timed synchronization (once per second)
     setInterval(() => {
       LayoutEngine.syncContainerSize(this);
+      ToolbarManager.updatePosition(this);
     }, 1000);
 
     // Global click capture - ensures sync whenever the header area is clicked, regardless of DOM changes
@@ -103,6 +109,8 @@ var NotebookManager = {
         console.log("[NB-Ext] Global Capture: Native Select Area clicked");
         this.scheduleRefresh([100, 300, 1000]);
       }
+      // Immediate toolbar position update on any click to catch toggle actions
+      setTimeout(() => ToolbarManager.updatePosition(this), 50);
     }, true);
   },
 

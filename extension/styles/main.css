@@ -40,6 +40,21 @@ body.dark-theme {
   min-height: 200px !important;
 }
 
+/* Visibility suppression in collapsed state */
+.nb-ext-shell-collapsed {
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.nb-ext-shell-collapsed .nb-ext-search-panel,
+.nb-ext-shell-collapsed .nb-ext-toolbar {
+    visibility: hidden !important;
+}
+
+.nb-ext-searching {
+  padding-bottom: 140px !important; /* Reserve space for search panel */
+}
+
 /* Material Symbols Global Styles */
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20 !important;
@@ -93,19 +108,50 @@ body.dark-theme {
   color: var(--nb-ext-text) !important;
 }
 
+.nb-ext-floating-shell {
+  position: fixed !important;
+  z-index: 1000160 !important; /* Extremely high to stay top */
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  align-items: stretch !important;
+  pointer-events: none !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
 .nb-ext-toolbar {
-  display: inline-flex !important;
-  gap: 4px !important;
+  position: relative !important;
+  display: flex !important;
+  gap: 6px !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-  flex: 0 0 auto !important;
-  z-index: 5 !important;
-  height: 100% !important;
-  margin: 0 4px !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  justify-content: center !important;
+  padding: 6px !important;
+  background: var(--nb-ext-bg) !important;
+  border: 1px solid var(--nb-ext-border) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  pointer-events: auto !important; 
+  align-self: flex-start !important; 
+  flex-shrink: 0 !important;
+  min-width: 0 !important;
+  z-index: 10001 !important;
+}
+
+body.dark-theme .nb-ext-toolbar {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+  background: #2d2e30 !important;
+}
+
+.nb-ext-toolbar.nb-ext-toolbar-disabled {
+  padding: 4px !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.nb-ext-toolbar.nb-ext-toolbar-disabled .nb-ext-toolbar-icon:not(.nb-ext-toggle-btn) {
+  display: none !important;
 }
 
 /* 4.71: Force toolbar parent container (usually nav) to align side-by-side */
@@ -130,20 +176,7 @@ body.dark-theme {
 }
 
 /* 4.20: Responsive collapse class based on JS ResizeObserver injection */
-body.nb-ext-is-collapsed .nb-ext-toolbar,
-body.nb-ext-is-collapsed h2,
-body.nb-ext-is-collapsed .title {
-  display: none !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-  width: 0 !important;
-}
-
-/* 4.72: Precision hiding based on native Angular class names */
-[class*="panel-header"].panel-header-collapsed .nb-ext-toolbar,
-[class*="panel-header-collapsed"] .nb-ext-toolbar {
-  display: none !important;
-}
+/* Toolbar visibility is now managed by JS logic and the .nb-ext-toolbar-disabled class */
 
 body.nb-ext-is-collapsed .nb-ext-search-container {
   display: none !important;
@@ -209,20 +242,22 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 
 /* 4.60: Advanced floating search panel */
 .nb-ext-search-panel {
-  position: fixed !important;
-  bottom: 20px !important;
-  /* v4.63: Moved to bottom */
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
   background: var(--nb-ext-bg-elevated) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid var(--nb-ext-border) !important;
   border-radius: 12px !important;
   box-shadow: var(--nb-ext-shadow-lg) !important;
-  z-index: 10001 !important;
   padding: 16px !important;
   animation: nb-ext-fade-in-bottom 0.2s ease-out !important;
   box-sizing: border-box !important;
-  /* 4.62: Width and Left are calculated dynamically via JS */
+  pointer-events: auto !important;
+  flex-shrink: 0 !important;
+  min-width: 0 !important;
+  z-index: 10002 !important;
 }
 
 @keyframes nb-ext-fade-in-bottom {
@@ -259,6 +294,8 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   padding: 0 8px !important;
   border: 1px solid transparent !important;
   transition: border-color 0.2s !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .nb-ext-search-box:focus-within {
@@ -404,13 +441,14 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   gap: 8px !important;
   flex-direction: column !important; /* Vertical layout for tree items */
   align-items: stretch !important;
-  padding: 8px 12px !important; /* Default padding */
-  min-height: 44px !important; /* Ensure consistent height */
+  min-height: 28px !important;
+  padding: 2px 8px !important;
+  margin: 1px 1px !important;
 }
 
 .nb-ext-item.nb-ext-display-double {
-  padding: 4px 6px !important;
-  min-height: 52px !important; /* More space for double line text */
+  padding: 4px 8px !important;
+  min-height: 48px !important; 
 }
 
 .nb-ext-item:hover {
@@ -497,17 +535,17 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 .nb-ext-item-row {
   transition: background 0.2s !important;
   border-radius: 8px !important;
-  margin: 0 8px !important;
   position: relative !important;
   flex-direction: column !important; /* Core: Vertical layout to support action rows */
   align-items: stretch !important;
-  padding: 8px 12px !important; /* Default padding */
-  min-height: 44px !important; /* Consistent height */
+  min-height: 28px !important;
+  padding: 2px 8px !important;
+  margin: 1px 1px !important;
 }
 
 .nb-ext-item-row.nb-ext-display-double {
-  padding: 4px 6px !important;
-  min-height: 52px !important;
+  padding: 4px 8px !important;
+  min-height: 48px !important;
 }
 
 .nb-ext-item-row:hover {
@@ -545,8 +583,8 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
   align-items: center !important;
   justify-content: center !important;
   background: var(--nb-ext-hover) !important;
-  width: 28px !important;
-  height: 28px !important;
+  width: 14px !important;
+  height: 14px !important;
   border-radius: 50% !important;
   border: none !important;
   flex-shrink: 0 !important;
@@ -563,7 +601,7 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 }
 
 .nb-ext-move-trigger .material-symbols-outlined {
-  font-size: 18px !important;
+  font-size: 14px !important;
 }
 
 .nb-ext-item-row:hover .nb-ext-move-trigger,

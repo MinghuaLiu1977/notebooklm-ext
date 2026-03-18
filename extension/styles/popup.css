@@ -149,17 +149,45 @@ p {
   text-align: center;
 }
 
-.buy-link {
-  color: #1a73e8;
+.buy-link.disabled {
+  color: #9aa0a6;
   text-decoration: none;
-  font-size: 0.85rem;
+  cursor: default;
+}
+
+.footer-row {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #f1f3f4;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.share-btn:hover {
+  background-color: #e8eaed;
+}
+
+.share-btn .material-symbols-outlined {
+  font-size: 16px;
 }
 
 .version {
   font-size: 0.7rem;
   color: #9aa0a6;
-  margin-top: 12px;
 }
 
 @media (prefers-color-scheme: dark) {

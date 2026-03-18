@@ -30,7 +30,8 @@ var ViewDetector = {
     );
 
     // 2. Width judgment (redundancy guarantee): If the scroll area width is very small, it must be in a collapsed state
-    const isTinyWidth = scrollArea && scrollArea.offsetWidth < 50;
+    const sidebar = document.querySelector('[class*="source-panel"]') || document.querySelector('.source-panel-content') || scrollArea;
+    const isTinyWidth = sidebar && sidebar.offsetWidth < 100;
 
     return !!(hasCollapsedClass || isTinyWidth);
   }

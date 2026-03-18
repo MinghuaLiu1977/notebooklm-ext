@@ -6,7 +6,16 @@ var StorageManager = {
 
   // Environment check: Is this running in a popup or a content script?
   isPopup() {
-    return this.isContextValid() && chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() !== window;
+    try {
+      if (!this.isContextValid()) return false;
+      // In MV3, we check if we're in the extension's own origin but not in a content script context
+      // chrome.extension.getBackgroundPage is often unavailable in MV3
+      return typeof window !== 'undefined' && 
+             window.location.protocol === 'chrome-extension:' && 
+             !window.location.href.includes('background');
+    } catch (e) {
+      return false;
+    }
   },
 
   async getNotebookConfig(notebookId) {
@@ -98,6 +107,40 @@ var StorageManager = {
     if (!this.isContextValid()) return;
     try {
       await chrome.storage.sync.set({ 'nb_ext_enabled': isEnabled });
+    } catch (e) {}
+  },
+
+  async getToolbarEnabled() {
+    if (!this.isContextValid()) return true;
+    try {
+      const result = await chrome.storage.local.get('nb_ext_toolbar_enabled');
+      return result.nb_ext_toolbar_enabled !== false;
+    } catch (e) {
+      return true;
+    }
+  },
+
+  async setToolbarEnabled(isEnabled) {
+    if (!this.isContextValid()) return;
+    try {
+      await chrome.storage.local.set({ 'nb_ext_toolbar_enabled': isEnabled });
+    } catch (e) {}
+  },
+
+  async getToolbarExpanded() {
+    if (!this.isContextValid()) return true;
+    try {
+      const result = await chrome.storage.local.get('nb_ext_toolbar_expanded');
+      return result.nb_ext_toolbar_expanded !== false;
+    } catch (e) {
+      return true;
+    }
+  },
+
+  async setToolbarExpanded(isExpanded) {
+    if (!this.isContextValid()) return;
+    try {
+      await chrome.storage.local.set({ 'nb_ext_toolbar_expanded': isExpanded });
     } catch (e) {}
   },
 
