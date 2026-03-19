@@ -113,6 +113,101 @@ var UIRenderer = {
     setTimeout(() => input.focus(), 50);
   },
 
+  renderFolderRenamer(manager, folder) {
+    const overlay = document.createElement('div');
+    overlay.className = 'nb-ext-modal-overlay';
+
+    const content = document.createElement('div');
+    content.className = 'nb-ext-modal-content';
+
+    const title = document.createElement('div');
+    title.className = 'nb-ext-modal-title';
+    title.textContent = 'Rename Folder';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'nb-ext-modal-input';
+    input.value = folder.name;
+    input.placeholder = 'Enter folder name...';
+
+    const actions = document.createElement('div');
+    actions.className = 'nb-ext-modal-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'nb-ext-btn nb-ext-btn-ghost';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => overlay.remove());
+
+    const okBtn = document.createElement('button');
+    okBtn.className = 'nb-ext-btn nb-ext-btn-primary';
+    okBtn.textContent = 'Save';
+
+    const doSave = () => {
+      const name = input.value.trim();
+      if (name) {
+        manager.renameFolder(folder.id, name);
+        overlay.remove();
+      }
+    };
+
+    okBtn.addEventListener('click', doSave);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSave();
+      if (e.key === 'Escape') overlay.remove();
+    });
+
+    actions.append(cancelBtn, okBtn);
+    content.append(title, input, actions);
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 50);
+  },
+
+  renderFolderDeleter(manager, folder) {
+    const overlay = document.createElement('div');
+    overlay.className = 'nb-ext-modal-overlay';
+
+    const content = document.createElement('div');
+    content.className = 'nb-ext-modal-content';
+
+    const title = document.createElement('div');
+    title.className = 'nb-ext-modal-title';
+    title.textContent = 'Delete Folder';
+
+    const desc = document.createElement('div');
+    desc.style.marginBottom = '20px';
+    desc.style.fontSize = '14px';
+    desc.style.color = 'var(--nb-ext-text-soft)';
+    desc.style.lineHeight = '1.6';
+    desc.innerHTML = `Are you sure you want to delete folder <b>"${folder.name}"</b>?<br/><span style="font-size: 13px; opacity: 0.8;">Note: This only removes the folder organization. Your documents will remain safe in NotebookLM.</span>`;
+
+    const actions = document.createElement('div');
+    actions.className = 'nb-ext-modal-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'nb-ext-btn nb-ext-btn-ghost';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => overlay.remove());
+
+    const okBtn = document.createElement('button');
+    okBtn.className = 'nb-ext-btn nb-ext-btn-primary';
+    okBtn.style.backgroundColor = '#d32f2f'; // Danger Red
+    okBtn.textContent = 'Delete Folder';
+    okBtn.addEventListener('click', () => {
+      manager.removeFolderOnly(folder.id);
+      overlay.remove();
+    });
+
+    actions.append(cancelBtn, okBtn);
+    content.append(title, desc, actions);
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+  },
+
   renderTreeView(manager, container, config) {
     const folderList = document.createElement('div');
     folderList.id = 'nb-ext-folder-list';
@@ -168,54 +263,38 @@ var UIRenderer = {
     icon.textContent = isCollapsed ? 'folder' : 'folder_open';
     folderTitle.appendChild(icon);
 
-    if (manager.editingFolderId === folder.id) {
-      const nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.value = folder.name;
-      nameInput.className = 'nb-ext-inline-edit-input';
-      nameInput.addEventListener('click', e => e.stopPropagation());
-      nameInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter') manager.renameFolder(folder.id, nameInput.value);
-        if (e.key === 'Escape') { manager.editingFolderId = null; manager.refreshData(); }
-      });
-      nameInput.addEventListener('blur', () => manager.renameFolder(folder.id, nameInput.value));
-      folderTitle.appendChild(nameInput);
-      setTimeout(() => nameInput.focus(), 50);
-    } else {
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'nb-ext-text-truncate nb-ext-folder-name';
-      nameSpan.textContent = `${folder.name} (${folder.itemIds.length})`;
-      folderTitle.addEventListener('click', () => {
-        if (isCollapsed) manager.collapsedFolderIds = manager.collapsedFolderIds.filter(id => id !== folder.id);
-        else manager.collapsedFolderIds.push(folder.id);
-        chrome.storage.local.set({ 'nb_ext_collapsed_ids': manager.collapsedFolderIds });
-        manager.refreshData(true); // Ensure forced redraw
-      });
-      folderTitle.appendChild(nameSpan);
+    const nameSpan = document.createElement('span');
+    const pool = [...manager.sources, ...manager.notes];
+    const activeCount = folder.itemIds.filter(id => pool.some(i => i.id === id)).length;
+    nameSpan.className = 'nb-ext-text-truncate nb-ext-folder-name';
+    nameSpan.textContent = `${folder.name} (${activeCount})`;
+    folderTitle.addEventListener('click', () => {
+      if (isCollapsed) manager.collapsedFolderIds = manager.collapsedFolderIds.filter(id => id !== folder.id);
+      else manager.collapsedFolderIds.push(folder.id);
+      chrome.storage.local.set({ 'nb_ext_collapsed_ids': manager.collapsedFolderIds });
+      manager.refreshData(true);
+    });
+    folderTitle.appendChild(nameSpan);
 
-      const editBtn = this.createActionIcon('edit', 'Rename', (e) => {
-        e.stopPropagation();
-        manager.editingFolderId = folder.id;
-        manager.refreshData(true);
-      });
-      const delBtn = this.createActionIcon('delete', 'Delete', (e) => {
-        e.stopPropagation();
-        const choice = confirm(`[OK]: Delete folder only\n[Cancel]: Delete folder AND documents`);
-        if (choice) manager.removeFolderOnly(folder.id);
-        else manager.removeFolderAndItems(folder.id);
-      });
-      folderTitle.append(editBtn, delBtn);
-      folderDiv.appendChild(folderTitle);
+    const editBtn = this.createActionIcon('edit', 'Rename', (e) => {
+      e.stopPropagation();
+      this.renderFolderRenamer(manager, folder);
+    });
+    const delBtn = this.createActionIcon('delete', 'Delete', (e) => {
+      e.stopPropagation();
+      this.renderFolderDeleter(manager, folder);
+    });
+    folderTitle.append(editBtn, delBtn);
+    folderDiv.appendChild(folderTitle);
 
-      if (!isCollapsed) {
-        const folderContent = document.createElement('div');
-        folderContent.className = 'nb-ext-folder-content';
-        folder.itemIds.forEach(itemId => {
-          const item = [...manager.sources, ...manager.notes].find(i => i.id === itemId);
-          if (item) folderContent.appendChild(this.createItemRow(manager, item, true));
-        });
-        folderDiv.appendChild(folderContent);
-      }
+    if (!isCollapsed) {
+      const folderContent = document.createElement('div');
+      folderContent.className = 'nb-ext-folder-content';
+      folder.itemIds.forEach(itemId => {
+        const item = pool.find(i => i.id === itemId);
+        if (item) folderContent.appendChild(this.createItemRow(manager, item, true));
+      });
+      folderDiv.appendChild(folderContent);
     }
     return folderDiv;
   },

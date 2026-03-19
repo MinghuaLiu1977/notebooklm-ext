@@ -42,7 +42,8 @@ var LayoutEngine = {
         container.style.top = `${targetRect.top - parentRect.top}px`;
         container.style.left = `${targetRect.left - parentRect.left}px`;
         container.style.width = `${targetRect.width}px`;
-        container.style.height = `${targetRect.height}px`;
+        container.style.height = 'auto';
+        container.style.maxHeight = `${targetRect.height}px`;
 
         // Shell positioning (Toolbar + Search)
         if (shell) {

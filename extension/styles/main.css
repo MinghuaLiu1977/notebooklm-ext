@@ -38,6 +38,7 @@ body.dark-theme {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   flex: 1 1 auto !important;
   min-height: 200px !important;
+  padding-bottom: 24px !important;
 }
 
 /* Visibility suppression in collapsed state - refined to allow toolbar toggle */
@@ -82,10 +83,20 @@ body.dark-theme {
 #nb-ext-container {
   position: absolute !important;
   z-index: 100 !important;
-  background-color: var(--nb-ext-bg) !important;
+  background-color: transparent !important; /* Allow native background to show below content */
   display: flex !important;
   flex-direction: column !important;
-  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  transition: opacity 0.2s ease !important;
+}
+
+/* Ensure our content looks solid on top of transparent container */
+#nb-ext-folder-list,
+.nb-ext-unassigned,
+.nb-ext-flat-list {
+  background-color: var(--nb-ext-bg) !important;
+  position: relative !important;
 }
 
 /* 4.13: Native Header toolbar alignment - strong peer isolation */
@@ -409,13 +420,13 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 .nb-ext-folder-title {
   display: flex !important;
   align-items: center !important;
-  padding: 8px 12px !important;
+  padding: 8px 16px !important;
   cursor: pointer !important;
   border-radius: 8px !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   font-weight: 500 !important;
   color: var(--nb-ext-text-soft) !important;
-  min-height: 44px !important; /* Ensure consistent height */
+  min-height: 48px !important;
 }
 
 /* Inline edit input styles */
@@ -443,14 +454,14 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 }
 
 .nb-ext-item {
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   position: relative !important;
   gap: 8px !important;
-  flex-direction: column !important; /* Vertical layout for tree items */
+  flex-direction: column !important;
   align-items: stretch !important;
-  min-height: 28px !important;
-  padding: 2px 8px !important;
-  margin: 1px 1px !important;
+  min-height: 34px !important; /* Increased from 28px */
+  padding: 4px 12px !important; /* Increased from 2px 8px */
+  margin: 2px 1px !important;
 }
 
 .nb-ext-item.nb-ext-display-double {
@@ -473,12 +484,12 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 }
 
 .nb-ext-source-label {
-  flex: 1 !important; /* Fill remaining space, pushing icons to the right */
+  flex: 1 !important;
   margin-right: 8px !important;
   cursor: pointer !important;
-  font-size: 13px !important;
+  font-size: 14.5px !important; /* Slightly larger for better readability */
   color: var(--nb-ext-text-soft) !important;
-  line-height: 1.5 !important;
+  line-height: 1.6 !important;
   padding-right: 0px !important; 
   word-break: break-all !important;
 }
@@ -562,11 +573,11 @@ body.dark-theme .nb-ext-icon-code { color: #90a4ae !important; }
   transition: background 0.2s !important;
   border-radius: 8px !important;
   position: relative !important;
-  flex-direction: column !important; /* Core: Vertical layout to support action rows */
+  flex-direction: column !important;
   align-items: stretch !important;
-  min-height: 28px !important;
-  padding: 2px 8px !important;
-  margin: 1px 1px !important;
+  min-height: 34px !important; /* Increased from 28px */
+  padding: 4px 12px !important; /* Increased from 2px 8px */
+  margin: 2px 1px !important;
 }
 
 .nb-ext-item-row.nb-ext-display-double {

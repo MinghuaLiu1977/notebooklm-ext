@@ -11,7 +11,6 @@ var NotebookManager = {
   isSearchOpen: false,
   isComposing: false,
   isAddingFolder: false,
-  editingFolderId: null,
   licenseInfo: null,
   isRendering: false,
   isInitialized: false,
@@ -266,7 +265,6 @@ var NotebookManager = {
       folder.name = newName;
       await StorageManager.saveNotebookConfig(this.notebookId, config);
     }
-    this.editingFolderId = null;
     this.refreshData(true);
   },
 
@@ -274,14 +272,6 @@ var NotebookManager = {
     const config = await StorageManager.getNotebookConfig(this.notebookId);
     config.folders = config.folders.filter(f => f.id !== folderId);
     await StorageManager.saveNotebookConfig(this.notebookId, config);
-    this.refreshData(true);
-  },
-
-  async removeFolderAndItems(folderId) {
-    const config = await StorageManager.getNotebookConfig(this.notebookId);
-    config.folders = config.folders.filter(f => f.id !== folderId);
-    await StorageManager.saveNotebookConfig(this.notebookId, config);
-    alert("Folder config removed. Note: Documents must be deleted manually in NotebookLM.");
     this.refreshData(true);
   },
 
@@ -311,13 +301,15 @@ var NotebookManager = {
     const folder = config.folders.find(f => f.id === folderId);
     if (!folder) return;
     
-    // If partial state is clicked, behavior is typically "Select All"
+    // Only operate on items that are currently present in the DOM/scan
+    const activeItems = folder.itemIds.map(itemId => [...this.sources, ...this.notes].find(i => i.id === itemId)).filter(Boolean);
+    if (activeItems.length === 0) return;
+
     const state = this.getSelectionState(folder.itemIds);
     const targetChecked = state === 'all' ? false : true;
 
-    folder.itemIds.forEach(itemId => {
-      const item = this.sources.find(i => i.id === itemId);
-      if (item?.checkbox && item.checkbox.checked !== targetChecked) {
+    activeItems.forEach(item => {
+      if (item.checkbox && item.checkbox.checked !== targetChecked) {
         item.checkbox.click();
       }
     });
@@ -327,14 +319,15 @@ var NotebookManager = {
   getSelectionState(itemIds) {
     if (!itemIds || itemIds.length === 0) return 'none';
     
-    let checkedCount = 0;
-    itemIds.forEach(id => {
-      const item = this.sources.find(s => s.id === id);
-      if (item?.checkbox?.checked) checkedCount++;
-    });
+    const pool = [...this.sources, ...this.notes];
+    const activeItems = itemIds.map(id => pool.find(s => s.id === id)).filter(Boolean);
+    
+    if (activeItems.length === 0) return 'none';
+    
+    const checkedCount = activeItems.filter(i => i.checkbox?.checked).length;
 
     if (checkedCount === 0) return 'none';
-    if (checkedCount === itemIds.length) return 'all';
+    if (checkedCount === activeItems.length) return 'all';
     return 'partial';
   },
 

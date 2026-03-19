@@ -300,6 +300,5 @@ var ToolbarManager = {
       }
     });
 
-    console.log(`[NB-Ext] Toolbar Status: mini=${isMini}, panelVisible=${this.isSourcePanelVisible}`);
   }
 };
