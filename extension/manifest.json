@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NotebookLM Enhancer",
-  "version": "1.1.7.3",
+  "version": "1.1.7.4",
   "description": "An enhancer for NotebookLM, providing folder management, advanced search and more.",
   "permissions": [
     "storage"

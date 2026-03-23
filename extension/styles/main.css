@@ -50,6 +50,10 @@ body.dark-theme {
     visibility: hidden !important;
 }
 
+.nb-ext-shell-mini .nb-ext-search-panel {
+    display: none !important;
+}
+
 /* Toolbar itself remains interactable via pointer-events override in its own class if needed, 
    but here we just ensure it's not forced hidden by the parent's collapse class */
 .nb-ext-shell-collapsed .nb-ext-toolbar {

@@ -49,6 +49,7 @@ var LayoutEngine = {
         if (shell) {
           shell.style.visibility = 'visible';
           shell.classList.remove('nb-ext-shell-collapsed');
+          shell.classList.remove('nb-ext-shell-mini');
           shell.style.left = `${targetRect.left}px`;
           shell.style.width = `${targetRect.width}px`;
           shell.style.bottom = '24px';
@@ -76,6 +77,9 @@ var LayoutEngine = {
                shell.style.left = '16px'; 
                shell.style.width = '40px';
                shell.style.bottom = '24px';
+               shell.classList.add('nb-ext-shell-mini');
+             } else {
+               shell.classList.remove('nb-ext-shell-mini');
              }
            }
          }
@@ -86,6 +90,7 @@ var LayoutEngine = {
          if (isNotebook && shell && !isNativeCollapsed) {
            shell.style.visibility = 'visible';
            shell.classList.remove('nb-ext-shell-collapsed');
+           shell.classList.add('nb-ext-shell-mini');
            shell.style.left = '16px';
            shell.style.bottom = '24px';
            shell.style.width = '40px';

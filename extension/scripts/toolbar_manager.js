@@ -61,6 +61,11 @@ var ToolbarManager = {
         } else {
           shell.classList.remove('nb-ext-shell-collapsed');
         }
+        if (isMini) {
+          shell.classList.add('nb-ext-shell-mini');
+        } else {
+          shell.classList.remove('nb-ext-shell-mini');
+        }
       }
     } else {
       if (toolbar) toolbar.style.display = 'none';
