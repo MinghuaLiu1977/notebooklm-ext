@@ -1,6 +1,6 @@
 /**
  * NotebookLM Enhancer - View Detector
- * Optimized for robust view state detection based on user-defined visibility rules.
+ * Final refined version based on user's strict 3-condition visibility rules.
  */
 var ViewDetector = {
   /**
@@ -19,49 +19,44 @@ var ViewDetector = {
 
   /**
    * Check if the sidebar is natively collapsed or hidden
-   * Rule: Hide if 'source-panel panel-collapsed' or similar state is present
+   * Rule 3: Hide if an element has BOTH 'source-panel' and 'panel-collapsed'
    */
   isNativeCollapsed() {
+    // 1. Strict user-defined check for combined classes
+    const isSidebarCollapsed = !!document.querySelector('.source-panel.panel-collapsed');
+    if (isSidebarCollapsed) return true;
+
+    // 2. Fallback: If no sidebar exists at all in the DOM, it's effectively hidden
     const sidebar = document.querySelector('.mat-drawer') || 
                     document.querySelector('.source-panel') ||
-                    document.querySelector('[class*="source-panel" i]') || 
                     document.querySelector('.scroll-area-desktop');
-
     if (!sidebar) return true;
 
-    // 1. Check for explicit collapse classes (user specified 'panel-collapsed')
-    const hasCollapsedClass = sidebar.classList.contains('panel-collapsed') || 
-                               sidebar.classList.contains('collapsed') ||
-                               document.querySelector('.panel-header-collapsed') ||
-                               document.body.classList.contains('nb-ext-is-collapsed');
-
-    // 2. Physical check for robustness
-    const isNarrow = sidebar.offsetWidth > 0 && sidebar.offsetWidth < 100;
-
-    return !!(hasCollapsedClass || isNarrow);
+    // 3. Physical check for robustness (Collapsed sidebar is usually very narrow)
+    return sidebar.offsetWidth > 0 && sidebar.offsetWidth < 100;
   },
 
   /**
    * Check if we are currently in a view that should HIDE the toolbar
-   * Rules: Hide if '.source-panel-view-content' or 'aria-modal="true"' is present.
+   * Rules 1 & 2: Hide if '.source-panel-view-content' or 'aria-modal="true"' is present.
    */
   isDocumentView() {
     const isNotebook = window.location.href.includes('/notebook/');
     if (!isNotebook) return false;
 
-    // 1. Rule: Hide if Source detail is expanded
+    // Rule 1: Hide if Source detail is expanded
     const hasSourceViewContent = !!document.querySelector('.source-panel-view-content');
     
-    // 2. Rule: Hide if any modal is active (Artifacts, Slide Decks, Infographics usually use this)
+    // Rule 2: Hide if any modal/dialog is active
     const hasAriaModal = !!document.querySelector('[aria-modal="true"]');
 
-    // 3. Fallback: Specific Studio/Document tags that might not use aria-modal
-    const hasSpecialViewer = !!document.querySelector('lb-source-viewer, lb-note-viewer, lb-slide-deck, lb-mind-map, lb-artifact-viewer');
+    // (Internal) Safety Check: Artifact viewers often trigger hide anyway
+    const hasArtifactViewer = !!document.querySelector('lb-artifact-viewer, lb-slide-deck, lb-mind-map');
     
-    const result = hasSourceViewContent || hasAriaModal || hasSpecialViewer;
+    const result = hasSourceViewContent || hasAriaModal || hasArtifactViewer;
     
     if (result) {
-      console.log("[NB-Ext] Hide triggered via:", { hasSourceViewContent, hasAriaModal, hasSpecialViewer });
+      console.log("[NB-Ext] Hide triggered:", { hasSourceViewContent, hasAriaModal, hasArtifactViewer });
     }
     return result;
   }

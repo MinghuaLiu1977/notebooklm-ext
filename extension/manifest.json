@@ -32,17 +32,6 @@
         "scripts/content.js"
       ],
       "run_at": "document_idle"
-    },
-    {
-      "matches": [
-        "https://notebooklm.google.com/*"
-      ],
-      "js": [
-        "lib/pptxgen.bundle.js",
-        "scripts/network_interceptor.js",
-        "scripts/slide_enhancer.js"
-      ],
-      "run_at": "document_end"
     }
   ],
   "host_permissions": [
