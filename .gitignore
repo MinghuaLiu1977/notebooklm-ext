@@ -1,0 +1,10 @@
+.DS_Store
+*.zip
+SlideRev v0.9.8.app/
+*.log
+tmp_verify/
+temp_slides/
+node_modules/
+dist/
+.idea/
+.vscode/
