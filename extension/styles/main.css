@@ -163,11 +163,19 @@ body.dark-theme .nb-ext-toolbar {
   background: #2d2e30 !important;
 }
 
+body.dark-theme .nb-ext-toolbar.nb-ext-toolbar-disabled {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 .nb-ext-toolbar.nb-ext-toolbar-disabled {
   padding: 4px !important;
   border-radius: 50% !important;
   width: 40px !important;
   height: 40px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .nb-ext-toolbar.nb-ext-toolbar-disabled .nb-ext-toolbar-icon:not(.nb-ext-toggle-btn) {
@@ -242,13 +250,15 @@ body.nb-ext-is-collapsed .nb-ext-item-icon {
 }
 
 .nb-ext-toolbar-icon.active {
-  background: var(--nb-ext-accent-bg) !important;
-  color: var(--nb-ext-accent) !important;
+  background: transparent !important;
+  color: var(--nb-ext-primary) !important;
+  transform: scale(1.1) !important;
 }
 
 .nb-ext-toolbar-icon:hover {
-  background: var(--nb-ext-hover) !important;
-  color: var(--nb-ext-text) !important;
+  background: transparent !important;
+  color: var(--nb-ext-primary) !important;
+  opacity: 1 !important;
 }
 
 .nb-ext-toolbar-icon .material-symbols-outlined {
@@ -1034,4 +1044,112 @@ body.dark-theme .nb-ext-license-input {
 .nb-ext-move-menu-item .empty-icon {
   width: 18px !important;
   margin-right: 8px !important;
+}
+
+/* SlideRev Tooltip Promo */
+.sliderev-promo-tooltip {
+  position: fixed !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 6px 14px 6px 10px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  transition: opacity 0.3s ease, background 0.3s ease !important;
+  z-index: 2147483647 !important;
+  max-width: 300px !important;
+  height: 32px !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+}
+
+body.dark-theme .sliderev-promo-tooltip {
+  background: rgba(40, 40, 40, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.sliderev-promo-tooltip:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.dark-theme .sliderev-promo-tooltip:hover {
+  background: rgba(40, 40, 40, 0.95) !important;
+}
+
+.sliderev-promo-tooltip .promo-icon {
+  color: var(--nb-ext-text-muted) !important;
+  font-size: 16px !important;
+  flex-shrink: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 6px !important;
+}
+
+.sliderev-promo-tooltip .promo-text {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: #1f1f1f !important;
+  white-space: nowrap !important;
+}
+
+body.dark-theme .sliderev-promo-tooltip .promo-text {
+  color: #e8eaed !important;
+}
+
+.sliderev-promo-tooltip .promo-icon {
+  color: #5f6368 !important;
+  font-size: 16px !important;
+  margin-right: 6px !important;
+}
+
+body.dark-theme .sliderev-promo-tooltip .promo-icon {
+  color: #9aa0a6 !important;
+}
+
+/* Second State (Action) */
+.sliderev-promo-tooltip.sliderev-promo-second-state {
+  background: #1a73e8 !important;
+  border-color: #1a73e8 !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4) !important;
+}
+
+.sliderev-promo-tooltip.sliderev-promo-second-state .promo-icon,
+.sliderev-promo-tooltip.sliderev-promo-second-state .promo-text {
+  color: #ffffff !important;
+}
+
+body.dark-theme .sliderev-promo-tooltip.sliderev-promo-second-state {
+  background: #8ab4f8 !important;
+  border-color: #8ab4f8 !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 12px rgba(138, 180, 248, 0.3) !important;
+}
+
+body.dark-theme .sliderev-promo-tooltip.sliderev-promo-second-state .promo-icon,
+body.dark-theme .sliderev-promo-tooltip.sliderev-promo-second-state .promo-text {
+  color: #202124 !important;
+}
+
+/* Unavailable Sources styling */
+.nb-ext-item-unavailable {
+  opacity: 0.6 !important;
+}
+
+.nb-ext-item-unavailable .nb-ext-source-label {
+  text-decoration: line-through !important;
+  color: var(--nb-ext-text-muted) !important;
+}
+
+.nb-ext-item-unavailable .nb-ext-item-icon {
+  color: var(--nb-ext-text-muted) !important;
 }

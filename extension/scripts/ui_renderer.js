@@ -2,7 +2,6 @@ var UIRenderer = {
   async renderSidebarUI(manager, config) {
     if (manager.isRendering) return;
     manager.isRendering = true;
-    console.log("[NB-Ext] renderSidebarUI: Rendering started");
 
     try {
       if (!config) config = await StorageManager.getNotebookConfig(manager.notebookId);
@@ -14,14 +13,13 @@ var UIRenderer = {
       if (!sidebarContent) {
         console.warn("[NB-Ext] renderSidebarUI: Sidebar content not found, retrying...");
         manager.isRendering = false;
-        setTimeout(() => manager.renderSidebarUI(config), 1000);
+        setTimeout(() => this.renderSidebarUI(manager, config), 1000);
         return;
       }
 
       let container = document.getElementById('nb-ext-container');
 
       if (!container) {
-        console.log("[NB-Ext] renderSidebarUI: Creating container");
         container = document.createElement('div');
         container.id = 'nb-ext-container';
         container.className = 'nb-ext-sidebar nb-ext-full-width';
@@ -43,7 +41,6 @@ var UIRenderer = {
 
       LayoutEngine.syncContainerSize(manager);
       this.applyFilter(manager);
-      console.log("[NB-Ext] renderSidebarUI: Rendering finished");
 
     } catch (err) {
       console.error("[NB-Ext] Render Error:", err);
@@ -291,6 +288,10 @@ var UIRenderer = {
   createItemRow(manager, item, isNested = false) {
     const row = document.createElement('div');
     row.className = `${isNested ? 'nb-ext-item' : 'nb-ext-item-row'} nb-ext-display-${manager.displayMode}`;
+    
+    if (item.isUnavailable) {
+      row.classList.add('nb-ext-item-unavailable');
+    }
 
     const mainContent = document.createElement('div');
     mainContent.className = 'nb-ext-item-main';
@@ -300,7 +301,13 @@ var UIRenderer = {
 
     const itemBox = document.createElement('span');
     
-    if (item.isLoading) {
+    if (item.isUnavailable) {
+      itemBox.className = 'nb-ext-checkbox-native material-symbols-outlined';
+      itemBox.textContent = 'error';
+      itemBox.title = 'Source unavailable or failed';
+      itemBox.style.cursor = 'not-allowed';
+      itemBox.style.color = '#d32f2f'; // Native red
+    } else if (item.isLoading) {
       itemBox.className = 'nb-ext-loading-spinner material-symbols-outlined';
       itemBox.textContent = 'progress_activity';
       itemBox.title = 'Loading...';
@@ -429,42 +436,65 @@ var UIRenderer = {
   },
 
   handleFileAction(manager, item, action) {
-    const nativeMoreBtn = document.getElementById(`source-item-more-button-${item.id}`);
-    if (!nativeMoreBtn) {
-      const buttons = document.querySelectorAll('[id^="source-item-more-button-"]');
-      const fallbackBtn = Array.from(buttons).find(b => b.id.includes(item.id));
-      if (!fallbackBtn) {
-        alert(`Native "${action}" button not found for this item. Please use the native NotebookLM interface.`);
-        return;
+    return new Promise((resolve) => {
+      const nativeMoreBtn = document.getElementById(`source-item-more-button-${item.id}`);
+      if (!nativeMoreBtn) {
+        const buttons = document.querySelectorAll('[id^="source-item-more-button-"]');
+        const fallbackBtn = Array.from(buttons).find(b => b.id.includes(item.id));
+        if (!fallbackBtn) {
+          console.warn(`[NB-Ext] Native "${action}" button not found for item:`, item.id);
+          resolve(false);
+          return;
+        }
+        fallbackBtn.click();
+      } else {
+        nativeMoreBtn.click();
       }
-      fallbackBtn.click();
-    } else {
-      nativeMoreBtn.click();
-    }
 
-    const patterns = {
-      'Rename': /Rename/i,
-      'Delete': /Remove|Delete/i
-    };
+      const patterns = {
+        'Rename': /Rename/i,
+        'Delete': /Remove|Delete/i
+      };
 
-    let attempts = 0;
-    const findAndClick = () => {
-      const menuItems = document.querySelectorAll('.mat-mdc-menu-content button, .mat-menu-content button');
-      const target = Array.from(menuItems).find(btn => patterns[action].test(btn.innerText));
+      let attempts = 0;
+      const findAndClick = () => {
+        const menuItems = document.querySelectorAll('.mat-mdc-menu-content button, .mat-menu-content button');
+        const target = Array.from(menuItems).find(btn => patterns[action].test(btn.innerText));
 
-      if (target) {
-        target.click();
-        console.log(`[NB-Ext] Successfully proxy-clicked native ${action}`);
+        if (target) {
+          target.click();
+          console.log(`[NB-Ext] Successfully proxy-clicked native ${action}`);
+          
+          if (action === 'Delete') {
+            const row = document.querySelector(`[data-id="${item.id}"]`);
+            if (row) {
+               row.style.opacity = '0.3';
+               row.style.pointerEvents = 'none';
+            }
 
-        // Schedule multiple refreshes to catch the state change after dialog/async update
-        manager.scheduleRefresh([500, 1000, 3000, 5000, 10000]);
-      } else if (attempts < 8) {
-        attempts++;
-        setTimeout(findAndClick, 150);
-      }
-    };
+            setTimeout(() => {
+              const dialogBtns = document.querySelectorAll('.mdc-dialog__actions button, .mat-mdc-dialog-actions button');
+              const confirmBtn = Array.from(dialogBtns).find(btn => /Remove|Delete|Confirm|Yes/i.test(btn.innerText));
+              if (confirmBtn) {
+                 confirmBtn.click();
+              }
+              manager.scheduleRefresh([300, 800, 2000]);
+              resolve(true);
+            }, 350);
+          } else {
+            manager.scheduleRefresh([300, 800]);
+            resolve(true);
+          }
+        } else if (attempts < 10) {
+          attempts++;
+          setTimeout(findAndClick, 150);
+        } else {
+          resolve(false);
+        }
+      };
 
-    setTimeout(findAndClick, 150);
+      setTimeout(findAndClick, 150);
+    });
   },
 
   createMenuItem(name, iconName, onClick) {
@@ -618,3 +648,16 @@ var UIRenderer = {
     });
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.UIRenderer = UIRenderer;
+}
+
+if (typeof window !== 'undefined') {
+  window.UIRenderer = UIRenderer;
+}
+
+// Explicit global export for cross-script reliability
+if (typeof window !== 'undefined') {
+  window.UIRenderer = UIRenderer;
+}

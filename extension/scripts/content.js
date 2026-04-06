@@ -118,6 +118,8 @@ var NotebookManager = {
       toolbarExpanded: ToolbarManager.isToolbarExpanded
     });
 
+    this.watchForArtifacts();
+
     if (this.notebookId) {
       this.refreshData(true);
     }
@@ -147,16 +149,167 @@ var NotebookManager = {
     return this.licenseInfo;
   },
 
+  updatePromoPosition(container, promoBtn) {
+    const rect = container.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      promoBtn.style.opacity = '0';
+      promoBtn.style.pointerEvents = 'none';
+      return;
+    }
+    
+    // Check if container is actually visible in viewport
+    const isVisible = rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+    if (!isVisible) {
+      promoBtn.style.opacity = '0';
+      promoBtn.style.pointerEvents = 'none';
+      return;
+    }
+
+    promoBtn.style.opacity = '1';
+    promoBtn.style.pointerEvents = 'auto';
+    
+    const centerX = rect.left + rect.width / 2;
+    const threshold = 50; 
+    
+    // If container top is near viewport top, place inside (10px from top)
+    // Otherwise place above (40px above its top)
+    if (rect.top < threshold) {
+      promoBtn.style.top = Math.max(10, rect.top + 10) + 'px';
+    } else {
+      promoBtn.style.top = (rect.top - 40) + 'px';
+    }
+    
+    promoBtn.style.left = centerX + 'px';
+  },
+
+  watchForArtifacts() {
+    if (this.artifactObserver) return;
+    
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.includes('Mac OS');
+    if (!isMac) return;
+
+    this.artifactObserver = new MutationObserver(() => {
+      // Prioritize the main viewer container and actual slide/artifact viewers.
+      // Avoid generic selectors like 'studio' or 'player' that match sidebar components.
+      const allPossible = document.querySelectorAll('.artifact-viewer-container, lb-slide-deck, lb-artifact-viewer, lb-document-viewer');
+      if (!allPossible.length) return;
+
+      // Deduplicate: If multiple containers are nested, only track the specific ones mentioned by user or the innermost ones.
+      const artifactContainers = Array.from(allPossible).filter(container => {
+        // If this container is inside another potential container, it might be a duplicate trigger.
+        // HOWEVER, we want to prioritize '.artifact-viewer-container' if it's the one the user cares about.
+        const isPriority = container.classList.contains('artifact-viewer-container');
+        const parentContainer = container.parentElement?.closest('.artifact-viewer-container, lb-slide-deck, lb-artifact-viewer, lb-document-viewer, [class*="slide-deck"], [class*="artifact"]');
+        
+        // If we have a parent container and we are NOT the priority one, skip us (let the parent handle it).
+        // If we ARE the priority one, we take precedence (but we should still check if another priority is above us).
+        if (parentContainer && !isPriority) return false;
+        
+        return true;
+      });
+
+      artifactContainers.forEach(container => {
+        if (container.dataset.sliderevTracked) return;
+        
+        // Final check: does any parent or child already have a tracked status?
+        if (container.closest('[data-sliderev-tracked]')) return;
+        if (container.querySelector('[data-sliderev-tracked]')) return;
+
+        container.dataset.sliderevTracked = 'true';
+        
+        // Skip if too small
+        if (container.offsetWidth < 100 || container.offsetHeight < 100) return;
+
+        const promoBtn = document.createElement('div');
+        promoBtn.className = 'sliderev-promo-tooltip';
+        promoBtn.innerHTML = `
+          <span class="material-symbols-outlined promo-icon">auto_awesome</span>
+          <span class="promo-text">Want an editable edition?</span>
+        `;
+        
+        let clickedOnce = false;
+        promoBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!clickedOnce) {
+            clickedOnce = true;
+            promoBtn.innerHTML = `
+              <span class="material-symbols-outlined promo-icon">download</span>
+              <span class="promo-text">Get SlideRev for macOS</span>
+            `;
+            promoBtn.classList.add('sliderev-promo-second-state');
+            setTimeout(() => {
+              if (clickedOnce) {
+                clickedOnce = false;
+                promoBtn.innerHTML = `
+                  <span class="material-symbols-outlined promo-icon">auto_awesome</span>
+                  <span class="promo-text">Want an editable edition?</span>
+                `;
+                promoBtn.classList.remove('sliderev-promo-second-state');
+              }
+            }, 5000);
+          } else {
+            window.open(chrome.runtime.getURL('sliderev.html'), '_blank');
+            clickedOnce = false;
+            promoBtn.innerHTML = `
+              <span class="material-symbols-outlined promo-icon">auto_awesome</span>
+              <span class="promo-text">Want an editable edition?</span>
+            `;
+            promoBtn.classList.remove('sliderev-promo-second-state');
+          }
+        });
+        
+        document.body.appendChild(promoBtn);
+
+        // Keep position synced
+        const update = () => this.updatePromoPosition(container, promoBtn);
+        
+        // Initial position
+        update();
+        
+        // Sync on resize/scroll/changes
+        const ro = new ResizeObserver(update);
+        ro.observe(container);
+        
+        // We also need to handle scrolling of any parent container
+        window.addEventListener('scroll', update, true);
+        window.addEventListener('resize', update);
+        
+        // Use a small interval as fallback for dynamic layout shifts not caught by ResizeObserver
+        const interval = setInterval(() => {
+           if (!container.isConnected) {
+             promoBtn.remove();
+             ro.disconnect();
+             window.removeEventListener('scroll', update, true);
+             window.removeEventListener('resize', update);
+             clearInterval(interval);
+             return;
+           }
+           update();
+        }, 500);
+      });
+    });
+    
+    this.artifactObserver.observe(document.body, { childList: true, subtree: true });
+  },
+
   async refreshData(force = false) {
     if (!this.isInitialized && !force) return;
+    
+    // Support both direct variable and window property for flexibility
+    const renderer = typeof UIRenderer !== 'undefined' ? UIRenderer : window.UIRenderer;
+    if (!renderer) {
+        if (force) console.warn("[NB-Ext] UIRenderer not loaded yet. Skipping refresh.");
+        return;
+    }
+
     try {
       await this.checkLicense();
       const needsRender = this.scanDom(force);
       if (needsRender || force) {
-        UIRenderer.renderSidebarUI(this);
+        renderer.renderSidebarUI(this);
       }
     } catch (e) {
-      console.error("[NB-Ext] Refresh failure:", e);
+      console.error("[NB-Ext] Refresh failure:", e.message, e.stack);
     }
   },
 
@@ -228,23 +381,58 @@ var NotebookManager = {
 
     const newSources = Array.from(sourceElements).map(el => {
       const parent = el.closest('.mat-mdc-list-item') || el.parentElement;
+      if (!parent) return null;
+
       const moreBtn = parent.querySelector('[id^="source-item-more-button-"]');
-      const name = el.getAttribute('aria-label') || el.innerText || "Unknown";
+      const name = (el.getAttribute('aria-label') || el.textContent || "Unknown").toString().trim();
       
       // Detect loading state (spinner or indeterminate state)
       const hasSpinner = !!parent.querySelector('mat-progress-spinner, .mat-mdc-progress-spinner, [role="progressbar"]');
+      
+      // Detect unavailable/error state
+      // 1. Explicit error icons natively injected by NotebookLM
+      const errorIcons = parent.querySelectorAll('mat-icon, .material-symbols-outlined');
+      const hasErrorIcon = Array.from(errorIcons).some(i => {
+        const text = (i.textContent || "").toLowerCase();
+        return text === 'error' || text === 'warning' || text === 'error_outline' || i.classList.contains('text-error');
+      });
+      
+      // 2. Disabled states
+      const parentIsDisabled = parent.hasAttribute('disabled') || 
+                               parent.getAttribute('aria-disabled') === 'true' || 
+                               parent.classList.contains('disabled') ||
+                               parent.classList.contains('mat-mdc-list-item-disabled');
+                               
+      const isDisabledDescendant = !!parent.querySelector('input[type="checkbox"]:disabled, button:disabled, [aria-disabled="true"]');
+      
+      // 3. User-identified explicit error block inside the source container
+      const hasErrorContainer = parent.classList.contains('single-source-error-container') || 
+                                !!parent.querySelector('.single-source-error-container');
+      
+      const isUnavailable = hasErrorIcon || parentIsDisabled || isDisabledDescendant || hasErrorContainer;
       
       return { 
         id: moreBtn ? moreBtn.id.replace('source-item-more-button-', '') : `auto-${name.replace(/\s+/g, '')}`,
         name, 
         element: el, 
         checkbox: parent.querySelector('input[type="checkbox"]'),
-        isLoading: hasSpinner
+        isLoading: hasSpinner,
+        isUnavailable: isUnavailable
       };
+    }).filter(Boolean); // Filter out null parents
+
+    // Log newly discovered unavailable sources
+    newSources.forEach(s => {
+      if (s.isUnavailable) {
+        const old = this.sources.find(x => x.id === s.id);
+        if (!old || !old.isUnavailable) {
+          console.log(`[NB-Ext] 🚫 Source marked as unavailable: "${s.name}" (ID: ${s.id})`);
+        }
+      }
     });
 
-    const hasChanged = JSON.stringify(newSources.map(s => ({ id: s.id, name: s.name, checked: !!s.checkbox?.checked, isLoading: s.isLoading }))) !== 
-                      JSON.stringify(this.sources.map(s => ({ id: s.id, name: s.name, checked: !!s.checkbox?.checked, isLoading: s.isLoading })));
+    const hasChanged = JSON.stringify(newSources.map(s => ({ id: s.id, name: s.name, checked: !!s.checkbox?.checked, isLoading: s.isLoading, isUnavailable: s.isUnavailable }))) !== 
+                      JSON.stringify(this.sources.map(s => ({ id: s.id, name: s.name, checked: !!s.checkbox?.checked, isLoading: s.isLoading, isUnavailable: s.isUnavailable })));
 
     if (hasChanged || forceRender) {
       if (this.isRendering && !forceRender) return false;

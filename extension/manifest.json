@@ -40,6 +40,18 @@
     "https://*.googleusercontent.com/*",
     "https://apps.apple.com/*"
   ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "sliderev.html",
+        "images/*",
+        "icons/*",
+        "scripts/*",
+        "styles/*"
+      ],
+      "matches": ["https://notebooklm.google.com/*"]
+    }
+  ],
   "icons": {
     "16": "icons/icon.png",
     "48": "icons/icon.png",

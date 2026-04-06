@@ -4,10 +4,8 @@ var ToolbarManager = {
   isSourcePanelVisible: false,
 
   async initToolbar(manager) {
-    console.log("[NB-Ext] ToolbarManager: initToolbar started");
     this.isToolbarEnabled = await StorageManager.getToolbarEnabled();
     this.isToolbarExpanded = await StorageManager.getToolbarExpanded();
-    console.log(`[NB-Ext] Persistence: Loaded toolbar states - Enabled: ${this.isToolbarEnabled}, Expanded: ${this.isToolbarExpanded}`);
     
     const shell = this.getOrCreateShell();
     let toolbar = shell.querySelector('.nb-ext-toolbar');
