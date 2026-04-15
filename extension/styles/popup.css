@@ -264,6 +264,11 @@ p {
   box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
 }
 
+.app-store-icon {
+  width: 14px;
+  height: 14px;
+}
+
 .promo-btn-primary.disabled {
   background: #f1f3f4;
   color: #9aa0a6 !important;
@@ -278,20 +283,7 @@ p {
 }
 
 /* Status dots for cleaner UI */
-.status-dot-pending, .status-dot-live {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
 
-.status-dot-pending { background-color: #f2994a; }
-.status-dot-live { background-color: #27ae60; animation: pulse-green 2s infinite; }
-
-@keyframes pulse-green {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(39, 174, 96, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
-}
 
 @media (prefers-color-scheme: dark) {
   body { background-color: #202124; color: #e8eaed; }

@@ -61,32 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Dynamic App Store Status Check
-            const checkAppStatus = async () => {
-                const url = 'https://apps.apple.com/us/app/slide-rev/id6761469500';
-                const promoStatusDot = document.getElementById('promo-status-dot');
-                const promoBtn = document.getElementById('promo-btn');
-                const promoBtnText = document.getElementById('promo-btn-text');
 
-                if (!promoBtn) return;
-
-                try {
-                    const response = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
-                    
-                    if (response.status === 200) {
-                        if (promoStatusDot) {
-                            promoStatusDot.className = 'status-dot-live';
-                        }
-                        if (promoBtnText) {
-                            promoBtnText.textContent = 'Get App';
-                        }
-                        promoBtn.classList.remove('disabled');
-                    }
-                } catch (err) {
-                    console.log("[NB-Ext] App status check skipped/failed");
-                }
-            };
-            checkAppStatus();
 
         } catch (e) {
             console.error("[NB-Ext] Popup Init Failed:", e);
