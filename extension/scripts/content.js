@@ -89,7 +89,12 @@ var NotebookManager = {
       if (this.scanTimer) clearTimeout(this.scanTimer);
       this.scanTimer = setTimeout(() => this.refreshData(), 500);
     });
-    this.observer.observe(document.body, { childList: true, subtree: true });
+    this.observer.observe(document.body, { 
+      childList: true, 
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'disabled', 'aria-disabled']
+    });
 
     // 4. Shared background sync
     setInterval(() => {

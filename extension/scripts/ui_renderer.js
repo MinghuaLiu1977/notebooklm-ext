@@ -426,6 +426,21 @@ var UIRenderer = {
 
     document.body.appendChild(menu);
 
+    // Adjust position to prevent rendering off-screen
+    const menuRect = menu.getBoundingClientRect();
+    let left = rect.left + window.scrollX;
+    let top = rect.bottom + window.scrollY + 5;
+
+    if (rect.left + menuRect.width > window.innerWidth) {
+      left = window.innerWidth - menuRect.width - 10;
+    }
+    if (rect.bottom + menuRect.height + 5 > window.innerHeight) {
+      top = rect.top + window.scrollY - menuRect.height - 5;
+    }
+
+    menu.style.left = `${Math.max(10, left)}px`;
+    menu.style.top = `${Math.max(10, top)}px`;
+
     const closeHandler = (e) => {
       if (!menu.contains(e.target) && !trigger.contains(e.target)) {
         menu.remove();
