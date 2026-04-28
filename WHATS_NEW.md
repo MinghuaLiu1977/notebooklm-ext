@@ -1,3 +1,10 @@
+# What's New in v1.8.4
+
+### ✨ Enhancements
+* **Optimized UI interactions**: Improved the interface responsiveness and overall user experience.
+
+---
+
 # What's New in v1.8.2
 
 ### ✨ Enhancements
